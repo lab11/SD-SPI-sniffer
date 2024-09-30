@@ -276,7 +276,7 @@ class SdioState:
         self.expected_response_length = 48
         print("\n\n\n\n\n")
 
-    def add_byte(self, value_mosi, start_time, end_time):
+    def add_byte(self, value_mosi, value_miso, start_time, end_time):
         """
         Add a byte of data and return a command, or None.
 
@@ -332,16 +332,16 @@ class SdioState:
         transmission_bit = bits[1]
         first_byte = bits[0:8]
         if first_byte == [1, 1, 1, 1, 1, 1, 0, 0]:
-            info  = interpret_data_block(bits)
+            mosi_data  = interpret_data_block(bits)
 
         elif first_byte == [1, 1, 1, 1, 1, 1, 0, 1]:
-            info  = interpret_data_block(bits)
+            mosi_data  = interpret_data_block(bits)
 
         elif first_byte == [1, 1, 1, 1, 1, 1, 1 ,0]:
-            info  = interpret_data_block(bits)
+            mosi_data  = interpret_data_block(bits)
 
         elif transmission_bit:
-            info = interpret_command(bits)
+            mosi_data = interpret_command(bits)
             command_index = value_from_bits(bits[2:8])
             # if a command, set up the next expected response
             self.expected_response = get_command_response(command_index)
@@ -350,14 +350,14 @@ class SdioState:
             )
         else:
             if this_response_type == 1 or this_response_type is None:
-                info = interpret_response1(bits)
+                mosi_data = interpret_response1(bits)
             elif this_response_type == 2:
-                info = interpret_response2(bits)
+                mosi_data = interpret_response2(bits)
             elif this_response_type == 3:
-                info = interpret_response3(bits)
+                mosi_data = interpret_response3(bits)
             else:
                 print("Unknown response type")
-                info = "R%s" % this_response_type
+                mosi_data = "R%s" % this_response_type
             self.expected_response = None
             self.expected_response_length = 48
         # TODO: figure this out, expected_response_length is reset above
@@ -371,15 +371,17 @@ class SdioState:
             self.command_start = end_time
             self.command_start -= GraphTimeDelta(float(bit_length) * (len(self.command_bits) - 0.5))
             print("new command bits =", self.command_bits)
-        print(info)
+        print(mosi_data)
         print(
             "start=%s, duration=%s"
             % (command_start, command_end - command_start)
         )
+        miso_data = ""
         data = {
             "start_time": command_start,
             "end_time": command_end,
-            "info": info,
+            "mosi_data": mosi_data,
+            "miso_data" : miso_data,
         }
         return data
 
@@ -396,12 +398,13 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
 
     def decode(self, data):
         info = self.state.add_byte(
-            data.data["mosi"], data.start_time, data.end_time
+            data.data["mosi"], data.data["miso"], data.start_time, data.end_time
         )
         if info:
             return AnalyzerFrame(
-                'mytype',
+                'SD frame',
                 info["start_time"],
                 info["end_time"],
-                {"info": info["info"]}
+                {"mosi_data": info["mosi_data"],
+                "miso_data": info["miso_data"]}
             )
