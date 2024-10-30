@@ -21,6 +21,7 @@ from saleae.data.timing import GraphTimeDelta
 from saleae.analyzers import HighLevelAnalyzer, AnalyzerFrame
 
 
+
 # states (CURRENT_STATE)
 CURRENT_STATE = {
     0: "IDLE",
@@ -60,16 +61,16 @@ COMMAND_INFO = {
     19: ("BUSTEST_W", 1),
     # Block-oriented read commands (class 2)
     16: ("SET_BLOCKLEN", 1),
-    17: ("READ_SINGLE_BLOCK", 1),
-    18: ("READ_MULTIPLE_BLOCK", 1),
-    21: ("SEND_TUNING_BLOCK", 1),
+    17: ("READ_SINGLE_BLOCK", 11),
+    18: ("READ_MULTIPLE_BLOCK", 11),
+    21: ("SEND_TUNING_BLOCK", 11),
     # Class 3 commands
     20: ("obsolete", None),
     22: ("reserved", None),
     # Block-oriented write commands (class 4)
     23: ("SET_BLOCK_COUNT", 1),
-    24: ("WRITE_BLOCK", 1),
-    25: ("WRITE_MULTIPLE_BLOCK", 1),
+    24: ("WRITE_BLOCK", 11),
+    25: ("WRITE_MULTIPLE_BLOCK", 11),
     26: ("PROGRAM_CID", 1),
     27: ("PROGRAM_CSD", 1),
     49: ("SET_TIME", 1),
@@ -104,6 +105,9 @@ COMMAND_INFO = {
 
 def get_response_length(resp):
     """Return the length of the given response type."""
+
+    if resp == 10:
+        return 515*8
     return 136 if resp == 2 else 48
 
 
@@ -157,6 +161,7 @@ def interpret_command(bits):
         info += ", ERROR"
     return info
 
+
 def interpret_data_block(bits):
     """Return a string description from the command bits."""
     #assert len(bits) == 48, "bits length is %d, bits are %s, " %(len(bits), hex(sum([(bits[i]==True)*2**(len(bits)-i) for i in range(len(bits))])))
@@ -185,7 +190,7 @@ def interpret_response1(bits):
         okay = False
     current_state = value_from_bits(device_status[19:23])
     info = "R1, "
-    info += str(bits[0:11])
+    #info += str(bits[0:11])
     if current_state in CURRENT_STATE:
         info += CURRENT_STATE[current_state]
     else:
@@ -264,13 +269,16 @@ class SdioState:
 
     def __init__(self):
         # bits leftover for the next command or response
-        self.command_bits = []
+        self.command_bits_mosi= []
+        self.command_bits_miso = []
         # start_time of the start of the command bits
-        self.command_start = None
+        self.command_start_mosi = None
+        self.command_start_miso = None
         # value used during debugging
         self.debug = None
         # time of first value
-        self.first_time = None
+        self.first_time_mosi = None
+        self.first_time_miso = None
         # response number expected, or None
         self.expected_response = None
         # bits in the expected response
@@ -290,10 +298,10 @@ class SdioState:
             value = value[0]
         assert isinstance(value, int)
         # if bus is idle, ignore value
-        if (value == 255 ) and not self.command_bits:
+        if (value == 255 ) and not self.command_bits_mosi:
             return None
-        if not self.first_time:
-            self.first_time = start_time
+        if not self.first_time_mosi:
+            self.first_time_mosi = start_time
         new_bits = bits_from_byte(value)
         bit_length = GraphTimeDelta(float(end_time - start_time) / 7.5)
         # self.debug = "t %s to %s" % (start_time, end_time)
@@ -304,29 +312,29 @@ class SdioState:
         # start_time -= 1e-7
 
         # start of new command
-        if not self.command_bits:
+        if not self.command_bits_mosi:
             count = 0
-            #while new_bits[0]:
-            #    count += 1
-            #    del new_bits[0]
-            self.command_start = start_time + GraphTimeDelta(count * float(bit_length))
-            self.command_bits = new_bits
+            while new_bits[0] and self.expected_response != 10:
+                count += 1
+                del new_bits[0]
+            self.command_start_mosi = start_time + GraphTimeDelta(count * float(bit_length))
+            self.command_bits_mosi = new_bits
             return None
         # add bits to command
-        self.command_bits += new_bits
+        self.command_bits_mosi += new_bits
         # if not enough to complete a command, just return
         #self.expected_response_length = 48
-        if len(self.command_bits) < self.expected_response_length:
+        if len(self.command_bits_mosi) < self.expected_response_length:
             return None
         # if we reached this point, we have a response or a command
         this_response_length = self.expected_response_length
         this_response_type = self.expected_response
         # get end time of this
-        command_start = self.command_start
+        command_start_mosi = self.command_start_mosi
         command_end = end_time - GraphTimeDelta(float(bit_length) * (
-            len(self.command_bits) - this_response_length
+            len(self.command_bits_mosi) - this_response_length
         ))
-        bits = self.command_bits[:this_response_length]
+        bits = self.command_bits_mosi[:this_response_length]
         print("\n")
         print("".join("1" if x else "0" for x in bits))
         # determine if response or command
@@ -340,6 +348,8 @@ class SdioState:
 
         elif first_byte == [1, 1, 1, 1, 1, 1, 1 ,0]:
             data  = interpret_data_block(bits)
+            self.expected_response = None
+            self.expected_response_length = 48
 
         elif transmission_bit:
             data = interpret_command(bits)
@@ -350,35 +360,29 @@ class SdioState:
                 self.expected_response
             )
         else:
-            if this_response_type == 1 or this_response_type is None:
-                data = interpret_response1(bits)
-            elif this_response_type == 2:
-                data = interpret_response2(bits)
-            elif this_response_type == 3:
-                data = interpret_response3(bits)
-            else:
-                print("Unknown response type")
-                data = "R%s" % this_response_type
             self.expected_response = None
             self.expected_response_length = 48
+            print("Unknown response type")
+            data = "R%s" % this_response_type
+           
         # TODO: figure this out, expected_response_length is reset above
         # see if new command is started within this byte
-        self.command_bits = self.command_bits[this_response_length:]
-        if all(x for x in self.command_bits):
-            self.command_bits = None
+        self.command_bits_mosi = self.command_bits_mosi[this_response_length:]
+        if all(x for x in self.command_bits_mosi):
+            self.command_bits_mosi = None
         else:
-            while self.command_bits[0]:
-                del self.command_bits[0]
-            self.command_start = end_time
-            self.command_start -= GraphTimeDelta(float(bit_length) * (len(self.command_bits) - 0.5))
-            print("new command bits =", self.command_bits)
+            while self.command_bits_mosi[0]:
+                del self.command_bits_mosi[0]
+            self.command_start_mosi = end_time
+            self.command_start_mosi -= GraphTimeDelta(float(bit_length) * (len(self.command_bits_mosi) - 0.5))
+            print("new command bits =", self.command_bits_mosi)
         print(data)
         print(
             "start=%s, duration=%s"
-            % (command_start, command_end - command_start)
+            % (command_start_mosi, command_end - command_start_mosi)
         )
         return_data = {
-            "command_start": command_start,
+            "command_start": command_start_mosi,
             "command_end": command_end,
             "data": data,
         }
@@ -397,10 +401,10 @@ class SdioState:
             value = value[0]
         assert isinstance(value, int)
         # if bus is idle, ignore value
-        if (value == 255 ) and not self.command_bits:
+        if (value == 255 ) and not self.command_bits_miso :
             return None
-        if not self.first_time:
-            self.first_time = start_time
+        if not self.first_time_miso:
+            self.first_time_miso = start_time
         new_bits = bits_from_byte(value)
         bit_length = GraphTimeDelta(float(end_time - start_time) / 7.5)
         # self.debug = "t %s to %s" % (start_time, end_time)
@@ -411,81 +415,80 @@ class SdioState:
         # start_time -= 1e-7
 
         # start of new command
-        if not self.command_bits:
+        if not self.command_bits_miso:
             count = 0
-            #while new_bits[0]:
-            #    count += 1
-            #    del new_bits[0]
-            self.command_start = start_time + GraphTimeDelta(count * float(bit_length))
-            self.command_bits = new_bits
+            while new_bits[0] and self.expected_response != 10:
+                count += 1
+                del new_bits[0]
+            self.command_start_miso = start_time + GraphTimeDelta(count * float(bit_length))
+            self.command_bits_miso = new_bits
             return None
         # add bits to command
-        self.command_bits += new_bits
+        self.command_bits_miso += new_bits
         # if not enough to complete a command, just return
         #self.expected_response_length = 48
-        if len(self.command_bits) < self.expected_response_length:
+        if len(self.command_bits_miso) < self.expected_response_length:
             return None
         # if we reached this point, we have a response or a command
         this_response_length = self.expected_response_length
         this_response_type = self.expected_response
         # get end time of this
-        command_start = self.command_start
+        command_start_miso = self.command_start_miso
         command_end = end_time - GraphTimeDelta(float(bit_length) * (
-            len(self.command_bits) - this_response_length
+            len(self.command_bits_miso) - this_response_length
         ))
-        bits = self.command_bits[:this_response_length]
+        bits = self.command_bits_miso[:this_response_length]
         print("\n")
         print("".join("1" if x else "0" for x in bits))
         # determine if response or command
         transmission_bit = bits[1]
         first_byte = bits[0:8]
-        if first_byte == [1, 1, 1, 1, 1, 1, 0, 0]:
+        if 0 and first_byte == [1, 1, 1, 1, 1, 1, 0, 0]:
             data  = interpret_data_block(bits)
 
-        elif first_byte == [1, 1, 1, 1, 1, 1, 0, 1]:
+        elif 0 and first_byte == [1, 1, 1, 1, 1, 1, 0, 1]:
             data  = interpret_data_block(bits)
 
-        elif first_byte == [1, 1, 1, 1, 1, 1, 1 ,0]:
+        elif this_response_type == 10 or (0 and first_byte == [1, 1, 1, 1, 1, 1, 1 ,0]):
             data  = interpret_data_block(bits)
-
-        elif transmission_bit:
-            data = interpret_command(bits)
-            command_index = value_from_bits(bits[2:8])
-            # if a command, set up the next expected response
-            self.expected_response = get_command_response(command_index)
-            self.expected_response_length = get_response_length(
-                self.expected_response
-            )
+            self.expected_response = None
+            self.expected_response_length = 48
         else:
+            self.expected_response = None
+            self.expected_response_length = 48
             if this_response_type == 1 or this_response_type is None:
                 data = interpret_response1(bits)
             elif this_response_type == 2:
                 data = interpret_response2(bits)
             elif this_response_type == 3:
                 data = interpret_response3(bits)
+            elif this_response_type == 11:
+                    data = interpret_response1(bits)
+                    self.expected_response = 10
+                    self.expected_response_length = 515*8
             else:
                 print("Unknown response type")
                 data = "R%s" % this_response_type
-            self.expected_response = None
-            self.expected_response_length = 48
+
         # TODO: figure this out, expected_response_length is reset above
         # see if new command is started within this byte
-        self.command_bits = self.command_bits[this_response_length:]
-        if all(x for x in self.command_bits):
-            self.command_bits = None
+        self.command_bits_miso = self.command_bits_miso[this_response_length:]
+        if all(x for x in self.command_bits_miso):
+            self.command_bits_miso = None
         else:
-            while self.command_bits[0]:
-                del self.command_bits[0]
-            self.command_start = end_time
-            self.command_start -= GraphTimeDelta(float(bit_length) * (len(self.command_bits) - 0.5))
-            print("new command bits =", self.command_bits)
+            while self.command_bits_miso[0]:
+                del self.command_bits_miso[0]
+            self.command_start_miso = end_time
+            self.command_start_miso -= GraphTimeDelta(float(bit_length) * (len(self.command_bits_miso) - 0.5))
+            #self.command_start_miso -= GraphTimeDelta(float(bit_length) * (8 - 0.5))
+            print("new command bits =", self.command_bits_miso)
         print(data)
         print(
             "start=%s, duration=%s"
-            % (command_start, command_end - command_start)
+            % (command_start_miso, command_end - command_start_miso)
         )
         return_data = {
-            "command_start": command_start,
+            "command_start": command_start_miso,
             "command_end": command_end,
             "data": data,
         }
@@ -493,7 +496,11 @@ class SdioState:
     
 
 class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
+    
+    last_end_time = None
 
+
+    
     result_types = {
         "error": {"format": "ERROR"},
         "sdio": {"format": "{{data.info}}"},
@@ -514,46 +521,63 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 value_mosi = value_mosi[0]
             assert isinstance(value_mosi, int)
             # if bus is idle, ignore value
-            if not((value_mosi == 255 ) and not self.state.command_bits):
+            if not((value_mosi == 255 ) and not self.state.command_bits_mosi):
                 mosi_data = self.state.add_mosi_byte(value_mosi, data.start_time, data.end_time)
+                
 
-        if "miso" in data.data and 0:
+        if "miso" in data.data:
             value_miso = data.data["miso"]
             if isinstance(value_miso, bytes):
                 assert len(value_miso) == 1
                 value_miso = value_miso[0]
             assert isinstance(value_miso, int)
             # if bus is idle, ignore value
-            if not((value_miso == 255 ) and not self.state.command_bits):
+            if not((value_miso == 255 ) and not self.state.command_bits_miso):
                 miso_data = self.state.add_miso_byte(value_miso, data.start_time, data.end_time)
+                
 
             
         
         if mosi_data:
+            #mosi_data["command_start"] = mosi_data["command_end"]
             data = {
                 "start_time": mosi_data["command_start"],
                 "end_time": mosi_data["command_end"],
                 "mosi_data": mosi_data["data"],
                 "miso_data" : "",
             }
-        elif miso_data and 0:  
+        elif miso_data: 
+            #miso_data["command_start"] = miso_data["command_end"] 
             data = {
                 "start_time": miso_data["command_start"],
                "end_time": miso_data["command_end"],
                "mosi_data": "",
               "miso_data" : miso_data["data"],
             }
-        elif mosi_data and miso_data and 0:
+        elif mosi_data and miso_data:
             data = {
                 "start_time": mosi_data["command_start"],
                 "end_time": mosi_data["command_end"],
-                "mosi_data": mosi_data["data"],
-                "miso_data" : miso_data["data"],
+                "mosi_data": mosi_data["data"] + "error",
+                "miso_data" : miso_data["data"] + "error",
             }
         else:
             return None
-        
         if data:
+            
+            if self.last_end_time is not None:
+                print("last_end_time = %s, data[start_time] = %s" % (self.last_end_time, data["start_time"]))
+                if data["start_time"] <= self.last_end_time:
+                    print()
+                    print()
+                    print("ERROR: overlapping frames")
+                    print("last_end_time = %s, data[start_time] = %s" % (self.last_end_time, data["start_time"]))
+                    print("mosi_data = %s" % data["mosi_data"])
+                    print("miso_data = %s" % data["miso_data"])
+                    data["start_time"] = self.last_end_time + GraphTimeDelta(1e-6)
+
+
+            self.last_end_time = data["end_time"]
             return AnalyzerFrame(
                 'SD frame',
                 data["start_time"],
