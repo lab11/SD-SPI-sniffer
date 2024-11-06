@@ -19,6 +19,7 @@ Website: https://github.com/timkostka/saleae_sdmmc_from_spi
 
 from saleae.data.timing import GraphTimeDelta
 from saleae.analyzers import HighLevelAnalyzer, AnalyzerFrame
+#from common import gvars
 
 
 
@@ -86,6 +87,7 @@ COMMAND_INFO = {
     # I/O mode commands (class 9)
     39: ("FAST_IO", 4),
     40: ("GO_IRQ_STATE", 5),
+    52: ("IO_RW_DIRECT", 5),
     # Lock Device commands (class 7)
     42: ("LOCK_UNLOCK", 1),
     # Application-specific commands (class 8)
@@ -108,7 +110,11 @@ def get_response_length(resp):
 
     if resp == 10:
         return 515*8
-    return 136 if resp == 2 else 48
+    elif resp == 2:
+        return 136
+    elif resp == 5:
+        return 16
+    return 48
 
 
 def get_command_name(cmd):
@@ -264,6 +270,48 @@ def interpret_response3(bits):
     info = "R3, %s" % ("READY" if ocr_register[0] else "BUSY")
     return info
 
+def interpret_response5(bits):
+    """
+    Return a string description from the response 5 bits.
+    Defined in 5.2.2 SDIO simplified Spec Version 3
+    Structure in order : Start Bit (1)
+                         Parameter Error (1),
+                         RFU (1) : Always 0
+                         Function number error (1)
+                         Com CRC Error (1)
+                         Illegal Command (1)
+                         RFU (1)
+                         Idle State (1)
+                         R/W Data (8 bits)
+    """
+
+    assert len(bits) == 16
+    start_bit = bits[0]
+    parameter_err = bits[1]
+    function_err = bits[3]
+    crc_err = bits[4]
+    ill_command_err = bits[5]
+    is_idle_state = bits[7]
+    rw_data = bits[8:16]
+    info = "R5 "
+    if start_bit or parameter_err or function_err or crc_err or ill_command_err:
+        info += ",ERROR "
+        if start_bit:
+            info += ",START_BIT_NOT_SET "
+        if parameter_err:
+            info += ",PARAM_ERR "
+        if function_err:
+            info += ",FUNC_ERR "
+        if ill_command_err:
+            info += ",ILLEGAL_CMD_ERR "
+        if crc_err:
+            info += ",CRC_ERR "
+    if is_idle_state:
+        info += ",IDLE_STATE "
+    else:
+        info += ",NOT_IDLE "
+    info += ",{} ".format(rw_data)
+    return info
 
 class SdioState:
 
@@ -462,6 +510,8 @@ class SdioState:
                 data = interpret_response2(bits)
             elif this_response_type == 3:
                 data = interpret_response3(bits)
+            elif this_response_type == 5:
+                data = interpret_response5(bits)
             elif this_response_type == 11:
                     data = interpret_response1(bits)
                     self.expected_response = 10
