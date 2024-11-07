@@ -105,7 +105,8 @@ COMMAND_INFO = {
 
 def get_response_length(resp):
     """Return the length of the given response type."""
-
+    if resp == 1:
+        return 8
     if resp == 10:
         return 515*8
     return 136 if resp == 2 else 48
@@ -178,51 +179,33 @@ def interpret_data_block(bits):
 
 def interpret_response1(bits):
     """Return a string description from the response 1 bits."""
-    assert len(bits) == 48
+    #assert len(bits) == 8]
+    print("bits = %s" % bits)
     okay = True
     start_bit = bits[0]
-    transmission_bit = bits[1]
     command_index = value_from_bits(bits[2:8])
-    device_status = bits[8:40]
-    crc7 = value_from_bits(bits[40:47])
-    end_bit = value_from_bits(bits[47:48])
-    if start_bit or transmission_bit or not end_bit:
-        okay = False
-    current_state = value_from_bits(device_status[19:23])
-    info = "R1, "
+    in_idle_state = bits[7]
+    info = "R1"
     #info += str(bits[0:11])
-    if current_state in CURRENT_STATE:
-        info += CURRENT_STATE[current_state]
-    else:
-        info += "UNKNOWN (%d)" % current_state
-        okay = False
+    if in_idle_state:
+        info += ", IDLE"
     # add error flags
-    if device_status[0]:
-        info += " ADDRESS_OUT_OF_RANGE"
-    if device_status[1]:
-        info += " ADDRESS_MISALIGN"
-    if device_status[2]:
-        info += " BLOCK_LEN_ERROR"
-    if device_status[3]:
-        info += " ERASE_EQ_ERROR"
-    if device_status[4]:
-        info += " ERASE_PARAM"
-    if device_status[5]:
-        info += " WP_VIOLATION"
-    if device_status[6]:
-        info += " DEVICE_IS_LOCKED"
-    if device_status[7]:
-        info += " LOCK_UNLOCK_FAILED"
-    if device_status[8]:
-        info += " COM_CRC_ERROR"
-    if device_status[9]:
-        info += " ILLEGAL_COMMAND"
-    if device_status[10]:
-        info += " DEVICE_ECC_FAILED"
-    if device_status[11]:
-        info += " CC_ERROR"
-    if device_status[12]:
-        info += " ERROR"
+    if bits[1]:
+        info += ", PARAM_ERROR"
+    if bits[2]:
+        info += ", ADDRESS_OUT_OF_RANGE"
+    if bits[3]:
+        info += ", ERASE_SEQUENCE_ERROR"
+    if bits[4]:
+        info += ", COM_CRC_ERROR"
+    if bits[5]:
+        info += ", ILLEGAL_COMMAND"
+    if bits[6]:
+        info += ", ERASE_RESET"
+    
+    if not okay:
+        info += ", ERROR"
+
     return info
 
 
