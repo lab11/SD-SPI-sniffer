@@ -1,13 +1,13 @@
 {
-  "name": "SDMMC from SPI paul", 
-  "version": "20.7.3",
-  "author": "Tim Kostka <kostka@gmail.com>",
-  "description": "Saleae Logic 2.x high level analyzer for SD/MMC communication",
+  "name": "SDSPI from SPI", 
+  "version": "0.1",
+  "author": "Paul de La Sayette, Jash Gujarathi",
+  "description": "Saleae Logic 2.x high level analyzer for SDSPI communication",
   "apiVersion": "1.0.0",
   "extensions": {
     "SDMMC from SPI paul": {
       "type": "HighLevelAnalyzer",
-      "entryPoint": "sdmmc_from_spi_paul.SdmmcFromSpiAnalyzer"
+      "entryPoint": "sdspi_from_spi.SdmmcFromSpiAnalyzer"
     }
   }
 }
