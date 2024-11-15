@@ -12,11 +12,12 @@ https://github.com/timkostka/saleae_sdmmc_from_spi
 
 """
 
-
+## imports 
 from saleae.data.timing import GraphTimeDelta
 from saleae.analyzers import HighLevelAnalyzer, AnalyzerFrame
 #from common import gvars
 
+EXPECT_DATA = 11
 
 
 # states (CURRENT_STATE)
@@ -58,16 +59,16 @@ COMMAND_INFO = {
     19: ("BUSTEST_W", 1),
     # Block-oriented read commands (class 2)
     16: ("SET_BLOCKLEN", 1),
-    17: ("READ_SINGLE_BLOCK", 11),
-    18: ("READ_MULTIPLE_BLOCK", 11),
-    21: ("SEND_TUNING_BLOCK", 11),
+    17: ("READ_SINGLE_BLOCK", EXPECT_DATA),
+    18: ("READ_MULTIPLE_BLOCK", EXPECT_DATA ),
+    21: ("SEND_TUNING_BLOCK", EXPECT_DATA ),
     # Class 3 commands
     20: ("obsolete", None),
     22: ("reserved", None),
     # Block-oriented write commands (class 4)
     23: ("SET_BLOCK_COUNT", 1),
-    24: ("WRITE_BLOCK", 11),
-    25: ("WRITE_MULTIPLE_BLOCK", 11),
+    24: ("WRITE_BLOCK", EXPECT_DATA),
+    25: ("WRITE_MULTIPLE_BLOCK", EXPECT_DATA),
     26: ("PROGRAM_CID", 1),
     27: ("PROGRAM_CSD", 1),
     49: ("SET_TIME", 1),
@@ -105,12 +106,12 @@ def get_response_length(resp):
     """Return the length of the given response type."""
     if resp == 1:
         return 8
-    if resp == 10:
+    elif resp == 5:
+        return 16
+    elif resp == 10:
         return 515*8
     elif resp == 2:
         return 136
-    elif resp == 5:
-        return 16
     return 48
 
 
@@ -249,6 +250,7 @@ def interpret_response3(bits):
     info = "R3, %s" % ("READY" if ocr_register[0] else "BUSY")
     return info
 
+
 def interpret_response5(bits):
     """
     Return a string description from the response 5 bits.
@@ -292,6 +294,7 @@ def interpret_response5(bits):
     info += ",{} ".format(rw_data)
     return info
 
+
 class SdioState:
 
     def __init__(self):
@@ -311,6 +314,9 @@ class SdioState:
         # bits in the expected response
         self.expected_response_length = 48
         print("\n\n\n\n\n")
+
+    # to do : find a way to avoid duplicated code for MOSI and MISO
+    # for example : create 2 different classes for mosi and miso communication 
 
     def add_mosi_byte(self, value, start_time, end_time):
         """
@@ -423,6 +429,8 @@ class SdioState:
         end is the end time of the byte
 
         """
+
+        # this code could be improved to be more reliable, it sometimes bugs at startup
         if isinstance(value, bytes):
             assert len(value) == 1
             value = value[0]
@@ -525,11 +533,10 @@ class SdioState:
     
 
 class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
-    
+    # class to communicate with the analyzer using the API
+
     last_end_time = None
 
-
-    
     result_types = {
         "error": {"format": "ERROR"},
         "sdio": {"format": "{{data.info}}"},
@@ -584,6 +591,7 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
               "miso_data" : miso_data["data"],
             }
         elif mosi_data and miso_data:
+            # not sure what to do here, but it shouldn't happen
             data = {
                 "start_time": mosi_data["command_start"],
                 "end_time": mosi_data["command_end"],
@@ -604,6 +612,8 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                     print("mosi_data = %s" % data["mosi_data"])
                     print("miso_data = %s" % data["miso_data"])
                     data["start_time"] = self.last_end_time + GraphTimeDelta(1e-6)
+                    # this usally creates an error when it's exectued
+                    # to do : find a way to not enter in the if statement
 
 
             self.last_end_time = data["end_time"]
@@ -613,4 +623,5 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 data["end_time"],
                 {"mosi_data": data["mosi_data"],
                 "miso_data": data["miso_data"]}
+                #to do : have better visualtion of the data
             )
