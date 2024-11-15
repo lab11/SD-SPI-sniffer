@@ -1,18 +1,14 @@
 """
-High Level Analyzer script for interpreting SDMMC communication.
+High Level Analyzer script for interpreting SDSPI communication.
 
 This is supported by Saleae Logic v2.3.1 or later.
 
 For more information, see https://github.com/saleae/logic2-examples
 
-To set up, create an SPI analyzer with the SDIO_CK signal on the SPI_MOSI line
-and use that channel as the input for this analyzer.
+Authors: Paul de La Sayette, Jash Gujarathi
 
-This analyzer will only decode the CMD signal.  The data signal(s) are not
-monitored.
-
-Author: Tim Kostka <kostka@gmail.com>
-Website: https://github.com/timkostka/saleae_sdmmc_from_spi
+Forked from the original script by Tim Kostka :
+https://github.com/timkostka/saleae_sdmmc_from_spi
 
 """
 
