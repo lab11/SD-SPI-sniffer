@@ -40,7 +40,7 @@ CURRENT_STATE = {
 # response of 0 means no response
 COMMAND_INFO = {
     # Basic commands (class 0 and class 1)
-    0: ("GO_IDLE_STATE", None),
+    0: ("GO_IDLE_STATE", 1),
     1: ("SEND_OP_COND", 3),
     2: ("ALL_SEND_CID", 2),
     3: ("SET_RELATIVE_ADDR", 1),
@@ -84,21 +84,23 @@ COMMAND_INFO = {
     # I/O mode commands (class 9)
     39: ("FAST_IO", 4),
     40: ("GO_IRQ_STATE", 5),
+    41: ("Iniitialisation command",1),
     52: ("IO_RW_DIRECT", 5),
     # Lock Device commands (class 7)
     42: ("LOCK_UNLOCK", 1),
-    # Application-specific commands (class 8)
-    55: ("APP_CMD", 1),
-    56: ("GEN_CMD", 1),
-    # Security Protocols (class 1None)
-    53: ("PROTOCOL_RD", 1),
-    54: ("PROTOCOL_WR", 1),
     # Command Queues (class 11)
     44: ("QUEUED_TASK_PARAMS", 1),
     45: ("QUEUED_TASK_ADDRESS", 1),
     46: ("EXECUTE_READ_TASK", 1),
     47: ("EXECUTE_WRITE_TASK", 1),
     48: ("CMDQ_TASK_MGMT", 1),
+    # Application-specific commands (class 8)
+    55: ("APP_CMD", 1),
+    56: ("GEN_CMD", 1),
+    # Security Protocols (class 1None)
+    53: ("PROTOCOL_RD", 1),
+    54: ("PROTOCOL_WR", 1),
+
 }
 
 
@@ -243,11 +245,16 @@ def interpret_response3(bits):
     okay = True
     start_bit = bits[0]
     transmission_bit = bits[1]
+    index = bits[2:8]
+    busy = bits[8]
+    ccs = bits[9]
+    uhs_ii_comaptible = bits[10]
+    switching_accepted = bits[16]
     check_bits_1 = bits[2:8]
     ocr_register = bits[8:40]
     check_bits_2 = bits[40:47]
     end_bit = value_from_bits(bits[47:48])
-    info = "R3, %s" % ("READY" if ocr_register[0] else "BUSY")
+    info = "R3, busy %s, ccs %s, uhs-ii-compatible %s, switching-accepted %s" % (busy, ccs, uhs_ii_comaptible, switching_accepted)
     return info
 
 
@@ -299,8 +306,8 @@ class SdioState:
 
     def __init__(self):
         # bits leftover for the next command or response
-        self.command_bits_mosi= []
-        self.command_bits_miso = []
+        self.command_bits_mosi= None
+        self.command_bits_miso = None
         # start_time of the start of the command bits
         self.command_start_mosi = None
         self.command_start_miso = None
@@ -398,17 +405,8 @@ class SdioState:
             print("Unknown response type")
             data = "R%s" % this_response_type
            
-        # TODO: figure this out, expected_response_length is reset above
         # see if new command is started within this byte
         self.command_bits_mosi = self.command_bits_mosi[this_response_length:]
-        if all(x for x in self.command_bits_mosi):
-            self.command_bits_mosi = None
-        else:
-            while self.command_bits_mosi[0]:
-                del self.command_bits_mosi[0]
-            self.command_start_mosi = end_time
-            self.command_start_mosi -= GraphTimeDelta(float(bit_length) * (len(self.command_bits_mosi) - 0.5))
-            print("new command bits =", self.command_bits_mosi)
         print(data)
         print(
             "start=%s, duration=%s"
@@ -429,7 +427,9 @@ class SdioState:
         end is the end time of the byte
 
         """
-
+        #if no expected response, ignore value
+        if not self.expected_response:
+            return None
         # this code could be improved to be more reliable, it sometimes bugs at startup
         if isinstance(value, bytes):
             assert len(value) == 1
@@ -507,18 +507,8 @@ class SdioState:
                 print("Unknown response type")
                 data = "R%s" % this_response_type
 
-        # TODO: figure this out, expected_response_length is reset above
         # see if new command is started within this byte
         self.command_bits_miso = self.command_bits_miso[this_response_length:]
-        if all(x for x in self.command_bits_miso):
-            self.command_bits_miso = None
-        else:
-            while self.command_bits_miso[0]:
-                del self.command_bits_miso[0]
-            self.command_start_miso = end_time
-            self.command_start_miso -= GraphTimeDelta(float(bit_length) * (len(self.command_bits_miso) - 0.5))
-            #self.command_start_miso -= GraphTimeDelta(float(bit_length) * (8 - 0.5))
-            print("new command bits =", self.command_bits_miso)
         print(data)
         print(
             "start=%s, duration=%s"
@@ -592,6 +582,7 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
             }
         elif mosi_data and miso_data:
             # not sure what to do here, but it shouldn't happen
+            print("ERROR: both mosi and miso data")
             data = {
                 "start_time": mosi_data["command_start"],
                 "end_time": mosi_data["command_end"],
@@ -600,28 +591,28 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
             }
         else:
             return None
-        if data:
-            
-            if self.last_end_time is not None:
+        
+
+        if self.last_end_time is not None:
+            print("last_end_time = %s, data[start_time] = %s" % (self.last_end_time, data["start_time"]))
+            if data["start_time"] <= self.last_end_time:
+                print()
+                print()
+                print("ERROR: overlapping frames")
                 print("last_end_time = %s, data[start_time] = %s" % (self.last_end_time, data["start_time"]))
-                if data["start_time"] <= self.last_end_time:
-                    print()
-                    print()
-                    print("ERROR: overlapping frames")
-                    print("last_end_time = %s, data[start_time] = %s" % (self.last_end_time, data["start_time"]))
-                    print("mosi_data = %s" % data["mosi_data"])
-                    print("miso_data = %s" % data["miso_data"])
-                    data["start_time"] = self.last_end_time + GraphTimeDelta(1e-6)
-                    # this usally creates an error when it's exectued
-                    # to do : find a way to not enter in the if statement
+                print("mosi_data = %s" % data["mosi_data"])
+                print("miso_data = %s" % data["miso_data"])
+                data["start_time"] = self.last_end_time + GraphTimeDelta(1e-6)
+                # this usally creates an error when it's exectued
+                # to do : find a way to not enter in the if statement
 
 
-            self.last_end_time = data["end_time"]
-            return AnalyzerFrame(
-                'SD frame',
-                data["start_time"],
-                data["end_time"],
-                {"mosi_data": data["mosi_data"],
-                "miso_data": data["miso_data"]}
-                #to do : have better visualtion of the data
-            )
+        self.last_end_time = data["end_time"]
+        return AnalyzerFrame(
+            'SD frame',
+            data["start_time"],
+            data["end_time"],
+            {"mosi_data": data["mosi_data"],
+            "miso_data": data["miso_data"]}
+            #to do : have better visualtion of the data
+        )
