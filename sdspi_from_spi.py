@@ -185,7 +185,6 @@ def interpret_data_block(bits):
 def interpret_response1(bits):
     """Return a string description from the response 1 bits."""
     #assert len(bits) == 8]
-    print("bits = %s" % bits)
     okay = True
     start_bit = bits[0]
     command_index = value_from_bits(bits[2:8])
@@ -376,7 +375,7 @@ class SdioState:
         ))
         bits = self.command_bits_mosi[:this_response_length]
         print("\n")
-        print("".join("1" if x else "0" for x in bits))
+        print("mosi bits : " + bin(value_from_bits(bits)))
         # determine if response or command
         transmission_bit = bits[1]
         first_byte = bits[0:8]
@@ -405,9 +404,7 @@ class SdioState:
             print("Unknown response type")
             data = "R%s" % this_response_type
            
-        # see if new command is started within this byte
-        self.command_bits_mosi = self.command_bits_mosi[this_response_length:]
-        print(data)
+        print("returned data : "+ data)
         print(
             "start=%s, duration=%s"
             % (command_start_mosi, command_end - command_start_mosi)
@@ -417,7 +414,9 @@ class SdioState:
             "command_end": command_end,
             "data": data,
         }
+        self.command_bits_mosi = None
         return return_data
+    
     
     def add_miso_byte(self, value, start_time, end_time):
         """
@@ -474,7 +473,7 @@ class SdioState:
         ))
         bits = self.command_bits_miso[:this_response_length]
         print("\n")
-        print("".join("1" if x else "0" for x in bits))
+        print("miso bits : " + bin(value_from_bits(bits)))
         # determine if response or command
         transmission_bit = bits[1]
         first_byte = bits[0:8]
@@ -507,9 +506,7 @@ class SdioState:
                 print("Unknown response type")
                 data = "R%s" % this_response_type
 
-        # see if new command is started within this byte
-        self.command_bits_miso = self.command_bits_miso[this_response_length:]
-        print(data)
+        print("returned data : " + data)
         print(
             "start=%s, duration=%s"
             % (command_start_miso, command_end - command_start_miso)
@@ -519,6 +516,7 @@ class SdioState:
             "command_end": command_end,
             "data": data,
         }
+        self.command_bits_miso = None
         return return_data
     
 
@@ -596,8 +594,6 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
         if self.last_end_time is not None:
             print("last_end_time = %s, data[start_time] = %s" % (self.last_end_time, data["start_time"]))
             if data["start_time"] <= self.last_end_time:
-                print()
-                print()
                 print("ERROR: overlapping frames")
                 print("last_end_time = %s, data[start_time] = %s" % (self.last_end_time, data["start_time"]))
                 print("mosi_data = %s" % data["mosi_data"])
