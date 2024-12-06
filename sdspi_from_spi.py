@@ -48,7 +48,7 @@ COMMAND_INFO = {
     5: ("SLEEP_AWAKE", 1),
     6: ("SWITCH", 1),
     7: ("SELECT_CARD", 1),
-    8: ("SEND_EXT_CSD", 1),
+    8: ("SEND_IF_COND", 7),
     9: ("SEND_CSD", 2),
     10: ("SEND_CID", 2),
     11: ("obsolete", None),
@@ -116,6 +116,8 @@ def get_response_length(resp):
         return 8
     elif resp == 2:
         return 136
+    elif resp == 7:
+        return 40
     return 48
 
 
@@ -216,6 +218,56 @@ def interpret_response1(bits):
 
     return info
 
+def interpret_response7(bits):
+    """
+    Physical Layer Specification 7.3.2.6
+    in response to SEND_IF_COND (CMD 8)
+    Structure :
+    [0 - 8] : R1
+    [8 - 12] : Command Version
+    [12 - 28] : Reserved bits
+    [28 - 32] : Voltage Accepted
+    [32 - 40 ] : Check Pattern
+    """
+    okay = True
+    start_bit = bits[0]
+    in_idle_state = bits[7]
+    info = "R7"
+    #info += str(bits[0:11])
+    if in_idle_state:
+        info += ", IDLE"
+    # add error flags
+    if bits[1]:
+        info += ", PARAM_ERROR"
+        okay = False
+    if bits[2]:
+        info += ", ADDRESS_OUT_OF_RANGE"
+        okay = False
+    if bits[3]:
+        info += ", ERASE_SEQUENCE_ERROR"
+        okay = False
+    if bits[4]:
+        info += ", COM_CRC_ERROR"
+        okay = False
+    if bits[5]:
+        info += ", ILLEGAL_COMMAND"
+        okay = False
+    if bits[6]:
+        info += ", ERASE_RESET"
+        okay = False
+    command_version = bits[8:12]
+    voltage_accepted = bits[28:32]
+    if voltage_accepted[3] != 1 :
+        info += ", VOLTAGE_NOT_3.3 {}".format(voltage_accepted)
+        okay = False
+    else:
+            info += ", VOLTAGE_3.3 {}".format(voltage_accepted)
+
+    if not okay:
+        info += ", ERROR"
+
+
+    return info
 
 def interpret_response2(bits):
     """Return a string description from the response 2 bits."""
@@ -484,9 +536,11 @@ class misoLineState (dataLineState):
             elif dataLineState.this_message_type == 5:
                 data = interpret_response5(bits)
             elif dataLineState.this_message_type == 11:
-                    data = interpret_response1(bits)
-                    dataLineState.expected_message_type = 10
-                    dataLineState.expected_message_length = 515*8
+                data = interpret_response1(bits)
+                dataLineState.expected_message_type = 10
+                dataLineState.expected_message_length = 515*8
+            elif dataLineState.this_message_type == 7:
+                data = interpret_response7(bits)
             else:
                 print("Unknown response type")
                 data = "R%s" % dataLineState.this_message_type
