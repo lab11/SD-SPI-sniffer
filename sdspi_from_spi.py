@@ -326,6 +326,7 @@ class dataLineState:
 
     # to do : find a way to avoid duplicated code for MOSI and MISO
     # for example : create 2 different classes for mosi and miso communication 
+        
 
     def get_bytes(self, value, start_time, end_time):
         """
@@ -378,6 +379,9 @@ class dataLineState:
         print("\n")
         return bits
 
+ 
+
+class mosiLineState (dataLineState):
 
     def add_mosi_byte(self, value, start_time, end_time):
         bits = self.get_bytes(value, start_time, end_time)
@@ -429,7 +433,9 @@ class dataLineState:
         self.debug("expected response length %s" % dataLineState.expected_message_length)
         return return_data
     
-    
+class misoLineState (dataLineState):
+
+
     def add_miso_byte(self, value, start_time, end_time):
         """
         Add a byte of data and return a command, or None.
@@ -490,7 +496,7 @@ class dataLineState:
         
         self.debug("expected command length %s" % dataLineState.expected_message_length)
         return return_data
-    
+
 
 class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
     # class to communicate with the analyzer using the API
@@ -503,8 +509,8 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
     }
 
     def __init__(self):
-        self.mosi_state = dataLineState()
-        self.miso_state = dataLineState()
+        self.mosi_state = mosiLineState()
+        self.miso_state = misoLineState()
 
 
     def decode(self, data):
