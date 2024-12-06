@@ -112,6 +112,8 @@ def get_response_length(resp):
         return 16
     elif resp == 10:
         return 515*8
+    elif resp == 11:
+        return 8
     elif resp == 2:
         return 136
     return 48
@@ -328,7 +330,7 @@ class dataLineState:
     # for example : create 2 different classes for mosi and miso communication 
         
 
-    def get_bytes(self, value, start_time, end_time):
+    def add_byte(self, value, start_time, end_time):
         """
         Add a byte of data and return a command, or None.
 
@@ -377,18 +379,32 @@ class dataLineState:
         ))
         bits = self.message_bits[:this_response_length]
         print("\n")
-        return bits
+
+        data = self.interpret_message(bits)
+
+        print("returned data : "+ data)
+        print(
+            "start=%s, duration=%s"
+            % (self.command_start, self.command_end - self.command_start)
+        )
+        return_data = {
+            "command_start": self.command_start,
+            "command_end": self.command_end,
+            "data": data,
+        }
+        self.message_bits = None
+        self.debug("expected next message type %s" % dataLineState.expected_message_type)
+        self.debug("expected response length %s" % dataLineState.expected_message_length)
+        return return_data
 
  
 
 class mosiLineState (dataLineState):
 
-    def add_mosi_byte(self, value, start_time, end_time):
-        bits = self.get_bytes(value, start_time, end_time)
+    def interpret_message(self, bits):
+
         self.debug("bits %s" % bits)
-        if not bits:
-            return None
-        
+
         self.debug("MOSI")
         # determine if response or command
         transmission_bit = bits[1]
@@ -417,26 +433,13 @@ class mosiLineState (dataLineState):
             dataLineState.expected_message_length = 48
             print("Unknown response type")
             data = "R%s" % dataLineState.this_message_type
+
+        return data
            
-        print("returned data : "+ data)
-        print(
-            "start=%s, duration=%s"
-            % (self.command_start, self.command_end - self.command_start)
-        )
-        return_data = {
-            "command_start": self.command_start,
-            "command_end": self.command_end,
-            "data": data,
-        }
-        self.message_bits = None
-        self.debug("expected next message type %s" % dataLineState.expected_message_type)
-        self.debug("expected response length %s" % dataLineState.expected_message_length)
-        return return_data
-    
+        
 class misoLineState (dataLineState):
-
-
-    def add_miso_byte(self, value, start_time, end_time):
+        
+    def interpret_message(self, bits):
         """
         Add a byte of data and return a command, or None.
 
@@ -446,12 +449,8 @@ class misoLineState (dataLineState):
         """
 
         #if no expected response, ignore value
-        if not dataLineState.expected_message_type:
-            return None
-        bits = self.get_bytes(value, start_time, end_time)
-        print("bits miso = %s" % bits)
-        if not bits:
-            return None
+        
+
         self.debug("MISO")
         transmission_bit = bits[1]
         first_byte = bits[0:8]
@@ -484,18 +483,7 @@ class misoLineState (dataLineState):
                 print("Unknown response type")
                 data = "R%s" % dataLineState.this_message_type
 
-        print("returned data : " + data)
-        print("start" + str (self.command_start))
-        print("end" + str (self.command_end))
-        return_data = {
-            "command_start": self.command_start,
-            "command_end": self.command_end,
-            "data": data,
-        }
-        self.message_bits = None
-        
-        self.debug("expected command length %s" % dataLineState.expected_message_length)
-        return return_data
+        return data
 
 
 class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
@@ -525,7 +513,7 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 value_mosi = value_mosi[0]
             assert isinstance(value_mosi, int)
             # if bus is idle, ignore value
-            mosi_data = self.mosi_state.add_mosi_byte(value_mosi, data.start_time, data.end_time)
+            mosi_data = self.mosi_state.add_byte(value_mosi, data.start_time, data.end_time)
                 
 
         if "miso" in data.data:
@@ -534,11 +522,13 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 assert len(value_miso) == 1
                 value_miso = value_miso[0]
             assert isinstance(value_miso, int)
-            # if bus is idle, ignore value
-            miso_data = self.miso_state.add_miso_byte(value_miso, data.start_time, data.end_time)
+
+            #only work on the data if a message is expected
+            if self.miso_state.expected_message_type :
+                miso_data = self.miso_state.add_byte(value_miso, data.start_time, data.end_time)
                 
 
-            
+        # To do : refactor this part
         
         if mosi_data:
             #mosi_data["command_start"] = mosi_data["command_end"]
@@ -552,9 +542,9 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
             #miso_data["command_start"] = miso_data["command_end"] 
             data = {
                 "start_time": miso_data["command_start"],
-               "end_time": miso_data["command_end"],
-               "mosi_data": "",
-              "miso_data" : miso_data["data"],
+                "end_time": miso_data["command_end"],
+                "mosi_data": "",
+                "miso_data" : miso_data["data"],
             }
         elif mosi_data and miso_data:
             # not sure what to do here, but it shouldn't happen
@@ -568,20 +558,11 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
         else:
             return None
         
-
+        # if times overlap, return an error
         if self.last_end_time is not None:
-            print("last_end_time = %s, data[start_time] = %s" % (self.last_end_time, data["start_time"]))
-            if data["start_time"] <= self.last_end_time:
-                print("ERROR: overlapping frames")
-                print("last_end_time = %s, data[start_time] = %s" % (self.last_end_time, data["start_time"]))
-                print("mosi_data = %s" % data["mosi_data"])
-                print("miso_data = %s" % data["miso_data"])
-                data["start_time"] = self.last_end_time + GraphTimeDelta(1e-6)
-                # this usally creates an error when it's exectued
-                # to do : find a way to not enter in the if statement
-
-
+            assert data["start_time"] > self.last_end_time, "ERROR : time overlap : start time %s, last end time %s" % (data["start_time"], self.last_end_time)
         self.last_end_time = data["end_time"]
+
         return AnalyzerFrame(
             'SD frame',
             data["start_time"],
