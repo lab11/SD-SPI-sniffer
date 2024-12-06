@@ -385,6 +385,13 @@ class dataLineState:
 
         data = self.interpret_message(bits)
 
+        #print the data in binary if small, in hex otherwise
+        if len(bits)<= 136:
+            print("bits (bin): "+ bin(value_from_bits(bits)))
+        else:
+            #print("bits (hex): "+ hex(value_from_bits(bits)))
+            pass
+
         print("returned data : "+ data)
         print(
             "start=%s, duration=%s"
@@ -406,9 +413,7 @@ class mosiLineState (dataLineState):
 
     def interpret_message(self, bits):
 
-        self.debug("bits %s" % bits)
-
-        self.debug("MOSI")
+        print("MOSI")
         # determine if response or command
         transmission_bit = bits[1]
         first_byte = bits[0:8]
@@ -454,7 +459,7 @@ class misoLineState (dataLineState):
         #if no expected response, ignore value
         
 
-        self.debug("MISO")
+        print("MISO")
         transmission_bit = bits[1]
         first_byte = bits[0:8]
         if 0 and first_byte == [1, 1, 1, 1, 1, 1, 0, 0]:
