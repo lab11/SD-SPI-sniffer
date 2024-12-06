@@ -148,6 +148,8 @@ def value_from_bits(bits):
     return value
 
 
+# to do : add theese in relevant classes
+
 def interpret_command(bits):
     """Return a string description from the command bits."""
     assert len(bits) == 48, "bits length is %d, bits are %s, " %(len(bits), hex(sum([(bits[i]==True)*2**(len(bits)-i) for i in range(len(bits))])))
@@ -319,9 +321,9 @@ class dataLineState:
         # bits leftover for the next command or response
         self.message_bits= None
         # start_time of the start of the command bits
-        self.command_start = None
+        self.message_start = None
         # end time of the command bits
-        self.command_end = None
+        self.message_end = None
         # time of first value
         self.first_time = None
         print("\n\n\n")
@@ -346,38 +348,39 @@ class dataLineState:
         # if bus is idle, ignore value
         if (value == 255 ) and not self.message_bits:
             return None
+        
         #if there this is the first message, set the first time
         if not self.first_time:
             self.first_time = start_time
         new_bits = bits_from_byte(value)
         bit_length = GraphTimeDelta(float(end_time - start_time) / 7.5)
-        # self.debug = "t %s to %s" % (start_time, end_time)
-        #self.debug("start_time:%s, end_time:%s" % (start_time, end_time))
-        # self.debug = "start %g" % (end_time - start_time)
 
-        # start of new message
+        # if this is the start of new message
         if not self.message_bits:
             count = 0
             # remove ones at the beginning if this is not a data block
             while new_bits[0] and dataLineState.expected_message_type != 10:
                 count += 1
                 del new_bits[0]
-            self.command_start = start_time + GraphTimeDelta(count * float(bit_length))
+            self.message_start = start_time + GraphTimeDelta(count * float(bit_length))
             self.message_bits = new_bits
         else:
             # add bits to command
             self.message_bits += new_bits
 
+        # if we don't have enough bits, return None
         if len(self.message_bits) < dataLineState.expected_message_length:
             return None
+        
         # if we reached this point, we have a response or a command
-        this_response_length = dataLineState.expected_message_length
+        this_message_length = dataLineState.expected_message_length
         dataLineState.this_message_type = dataLineState.expected_message_type
-        # get end time of this
-        self.command_end = end_time - GraphTimeDelta(float(bit_length) * (
-            len(self.message_bits) - this_response_length
+
+        # get end time of this message
+        self.message_end = end_time - GraphTimeDelta(float(bit_length) * (
+            len(self.message_bits) - this_message_length
         ))
-        bits = self.message_bits[:this_response_length]
+        bits = self.message_bits[:this_message_length]
         print("\n")
 
         data = self.interpret_message(bits)
@@ -385,11 +388,11 @@ class dataLineState:
         print("returned data : "+ data)
         print(
             "start=%s, duration=%s"
-            % (self.command_start, self.command_end - self.command_start)
+            % (self.message_start, self.message_end - self.message_start)
         )
         return_data = {
-            "command_start": self.command_start,
-            "command_end": self.command_end,
+            "message_start": self.message_start,
+            "message_end": self.message_end,
             "data": data,
         }
         self.message_bits = None
@@ -531,18 +534,18 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
         # To do : refactor this part
         
         if mosi_data:
-            #mosi_data["command_start"] = mosi_data["command_end"]
+            #mosi_data["message_start"] = mosi_data["message_end"]
             data = {
-                "start_time": mosi_data["command_start"],
-                "end_time": mosi_data["command_end"],
+                "start_time": mosi_data["message_start"],
+                "end_time": mosi_data["message_end"],
                 "mosi_data": mosi_data["data"],
                 "miso_data" : "",
             }
         elif miso_data: 
-            #miso_data["command_start"] = miso_data["command_end"] 
+            #miso_data["message_start"] = miso_data["message_end"] 
             data = {
-                "start_time": miso_data["command_start"],
-                "end_time": miso_data["command_end"],
+                "start_time": miso_data["message_start"],
+                "end_time": miso_data["message_end"],
                 "mosi_data": "",
                 "miso_data" : miso_data["data"],
             }
@@ -550,8 +553,8 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
             # not sure what to do here, but it shouldn't happen
             print("ERROR: both mosi and miso data")
             data = {
-                "start_time": mosi_data["command_start"],
-                "end_time": mosi_data["command_end"],
+                "start_time": mosi_data["message_start"],
+                "end_time": mosi_data["message_end"],
                 "mosi_data": mosi_data["data"] + "error",
                 "miso_data" : miso_data["data"] + "error",
             }
