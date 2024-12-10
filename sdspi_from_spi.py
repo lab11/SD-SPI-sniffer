@@ -194,11 +194,11 @@ def interpret_response1(bits):
     okay = True
     start_bit = bits[0]
     command_index = value_from_bits(bits[2:8])
-    in_idle_state = bits[7]
+    in_busy_state = bits[7]
     info = "R1"
     #info += str(bits[0:11])
-    if in_idle_state:
-        info += ", IDLE"
+    if in_busy_state:
+        info += ", BUSY"
     # add error flags
     if bits[1]:
         info += ", PARAM_ERROR"
@@ -231,11 +231,11 @@ def interpret_response7(bits):
     """
     okay = True
     start_bit = bits[0]
-    in_idle_state = bits[7]
+    in_busy_state = bits[7]
     info = "R7"
     #info += str(bits[0:11])
-    if in_idle_state:
-        info += ", IDLE"
+    if in_busy_state:
+        info += ", BUSY"
     # add error flags
     if bits[1]:
         info += ", PARAM_ERROR"
@@ -324,7 +324,7 @@ def interpret_response5(bits):
                          Com CRC Error (1)
                          Illegal Command (1)
                          RFU (1)
-                         Idle State (1)
+                         Busy State (1)
                          R/W Data (8 bits)
     """
 
@@ -334,7 +334,7 @@ def interpret_response5(bits):
     function_err = bits[3]
     crc_err = bits[4]
     ill_command_err = bits[5]
-    is_idle_state = bits[7]
+    is_busy_state = bits[7]
     rw_data = bits[8:16]
     info = "R5 "
     if start_bit or parameter_err or function_err or crc_err or ill_command_err:
@@ -349,10 +349,10 @@ def interpret_response5(bits):
             info += ",ILLEGAL_CMD_ERR "
         if crc_err:
             info += ",CRC_ERR "
-    if is_idle_state:
-        info += ",IDLE_STATE "
+    if is_busy_state:
+        info += ",BUSY_STATE "
     else:
-        info += ",NOT_IDLE "
+        info += ",IDLE "
     info += ",{} ".format(rw_data)
     return info
 
