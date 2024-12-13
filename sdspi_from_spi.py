@@ -100,7 +100,7 @@ COMMAND_INFO = {
     # Security Protocols (class 1None)
     53: ("PROTOCOL_RD", 1),
     54: ("PROTOCOL_WR", 1),
-
+    58 : ("READ OCR", 3)
 }
 
 
