@@ -367,6 +367,8 @@ class dataLineState:
     # bits in the expected response
     expected_message_length = 48
     # value used during debugging
+    
+
     debug = print
 
     def __init__(self):
@@ -378,6 +380,8 @@ class dataLineState:
         self.message_end = None
         # time of first value
         self.first_time = None
+
+        self.this_message_length = 0
         print("\n\n\n")
 
     # to do : find a way to avoid duplicated code for MOSI and MISO
@@ -425,14 +429,14 @@ class dataLineState:
             return None
         
         # if we reached this point, we have a response or a command
-        this_message_length = dataLineState.expected_message_length
+        self.this_message_length = dataLineState.expected_message_length
         dataLineState.this_message_type = dataLineState.expected_message_type
 
         # get end time of this message
         self.message_end = end_time - GraphTimeDelta(float(bit_length) * (
-            len(self.message_bits) - this_message_length
+            len(self.message_bits) - self.this_message_length
         ))
-        bits = self.message_bits[:this_message_length]
+        bits = self.message_bits[:self.this_message_length]
         print("\n")
 
         data = self.interpret_message(bits)
@@ -563,6 +567,7 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
         self.miso_state = misoLineState()
         self.last_end_time = None
         self.number_of_bytes = 0
+        self.last_number_of_bytes = 0
 
 
     def decode(self, data):
@@ -580,6 +585,7 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
             assert isinstance(value_mosi, int)
             # if bus is idle, ignore value
             mosi_data = self.mosi_state.add_byte(value_mosi, data.start_time, data.end_time)
+
                 
 
         if "miso" in data.data:
@@ -592,6 +598,8 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
             #only work on the data if a message is expected
             if self.miso_state.expected_message_type :
                 miso_data = self.miso_state.add_byte(value_miso, data.start_time, data.end_time)
+
+            # update the number of t=bytes till last command      
                 
 
         # To do : refactor this part
@@ -604,6 +612,8 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 "mosi_data": mosi_data["data"],
                 "miso_data" : "",
             }
+            response_time_in_bytes = ""
+
         elif miso_data: 
             #miso_data["message_start"] = miso_data["message_end"] 
             data = {
@@ -612,6 +622,8 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 "mosi_data": "",
                 "miso_data" : miso_data["data"],
             }
+            response_time_in_bytes = str(self.number_of_bytes - self.last_number_of_bytes- 1/8*(self.miso_state.this_message_length))
+
         elif mosi_data and miso_data:
             # not sure what to do here, but it shouldn't happen
             print("ERROR: both mosi and miso data")
@@ -621,17 +633,20 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 "mosi_data": mosi_data["data"] + "error",
                 "miso_data" : miso_data["data"] + "error",
             }
+            response_time_in_bytes = ""
         else:
             return None
         
         # if times overlap, return an error
         if self.last_end_time is not None:
             assert data["start_time"] > self.last_end_time, "ERROR : time overlap : start time %s, last end time %s" % (data["start_time"], self.last_end_time)
-            response_time = str(1000*float((data["start_time"]- self.last_end_time)))
+            response_time_in_ms = str(1000*float((data["start_time"]- self.last_end_time)))
         else:
-            response_time = ""
-        self.last_end_time = data["end_time"]
+            response_time_in_ms = ""
 
+
+        self.last_end_time = data["end_time"]
+        self.last_number_of_bytes = self.number_of_bytes
             
 
         return AnalyzerFrame(
@@ -640,7 +655,8 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
             data["end_time"],
             {"mosi_data": data["mosi_data"],
             "miso_data": data["miso_data"],
-            "response_time(ms)" : response_time
+            "response_time(ms)" : response_time_in_ms,
+            "response_time(bytes)" : response_time_in_bytes
             }
             #to do : have better visualtion of the data
         )
