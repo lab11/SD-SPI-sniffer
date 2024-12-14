@@ -551,7 +551,7 @@ class misoLineState (dataLineState):
 class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
     # class to communicate with the analyzer using the API
 
-    last_end_time = None
+    
 
     result_types = {
         "error": {"format": "ERROR"},
@@ -561,12 +561,16 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
     def __init__(self):
         self.mosi_state = mosiLineState()
         self.miso_state = misoLineState()
+        self.last_end_time = None
+        self.number_of_bytes = 0
 
 
     def decode(self, data):
 
         mosi_data = None
         miso_data = None
+        
+        self.number_of_bytes +=1 
 
         if "mosi" in data.data:
             value_mosi = data.data["mosi"]
@@ -623,13 +627,20 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
         # if times overlap, return an error
         if self.last_end_time is not None:
             assert data["start_time"] > self.last_end_time, "ERROR : time overlap : start time %s, last end time %s" % (data["start_time"], self.last_end_time)
+            response_time = str(1000*float((data["start_time"]- self.last_end_time)))
+        else:
+            response_time = ""
         self.last_end_time = data["end_time"]
+
+            
 
         return AnalyzerFrame(
             'SD frame',
             data["start_time"],
             data["end_time"],
             {"mosi_data": data["mosi_data"],
-            "miso_data": data["miso_data"]}
+            "miso_data": data["miso_data"],
+            "response_time(ms)" : response_time
+            }
             #to do : have better visualtion of the data
         )
