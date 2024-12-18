@@ -463,7 +463,6 @@ class dataLineState:
         self.debug("expected response length %s" % dataLineState.expected_message_length)
         return return_data
 
- 
 
 class mosiLineState (dataLineState):
 
@@ -552,7 +551,7 @@ class misoLineState (dataLineState):
         return data
 
 
-class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
+class SDSPIFromSpiAnalyzer(HighLevelAnalyzer):
     # class to communicate with the analyzer using the API
 
     

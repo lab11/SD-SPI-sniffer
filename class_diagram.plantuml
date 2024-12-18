@@ -1,0 +1,47 @@
+@startuml class_diagram
+
+
+class DataLane{
+
+    str add_byte (value, start_time, end_time)
+    {static}int expected_message
+    {static}int expected_length
+    List message_bytes
+    Time message_start
+    Time message_ends       
+
+
+}
+
+
+
+class MosiDataLane{
+    str interpret_message(List bytes)
+}
+
+
+class MisoDataLane{
+    str interpret_message(List bytes)
+}
+
+class SDSPIFromSpiAnalyzer{
+    MosiDataLane mosiDataLane
+    MisoDataLane misoDataLane
+    str decode(data)
+}
+
+
+class HighLevelAnalyzer
+
+note top of HighLevelAnalyzer
+  From the Logic 2 API
+end note
+
+HighLevelAnalyzer <|-- SDSPIFromSpiAnalyzer
+DataLane <|-- MosiDataLane
+DataLane <|-- MisoDataLane
+
+SDSPIFromSpiAnalyzer *-- MosiDataLane
+SDSPIFromSpiAnalyzer *-- MisoDataLane
+
+@enduml
