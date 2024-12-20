@@ -1,0 +1,90 @@
+digraph Card_CIM {
+    fontsize="40"
+    rankdir=LR; // Left-to-right layout
+    node [shape=circle]; // Nodes will be circular
+    label="Card State Machine"
+    
+    Node1 [label="Inactive Mode", fontsize="40", fontsize="80", penwidth="10", style=bold];
+    Node2 [label="Ver_1.x Initializing", fontsize="80", penwidth="10", style=bold];
+    Node3 [label="Ver_2.x Waiting for CMD_8", fontsize="80", penwidth="10", style=bold];
+    Node4 [label="Ver_2.x Initializing", fontsize="80", penwidth="10", style=bold];
+    Node5 [label="Data Transfer Mode" , fontsize="70", penwidth="10", style=bold];
+    Node6 [label="Power off", fontsize="40", fontsize="80", penwidth="10", style=bold]
+    Node7 [label="Version 2.x Status Check", fontsize="40", fontsize="80", penwidth="10", style=bold]
+    Node8 [label="Version 1.x Status Check", fontsize="40", fontsize="80", penwidth="10", style=bold]
+    //transitions
+    Node6 -> Node1 [label="POWER_ON", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node1 -> Node1 [label="B1", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node1 -> Node3 [label="B2", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node1 -> Node2 [label="B3", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node4 -> Node5 [label="B4", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node3 -> Node4 [label="B5", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node3 -> Node1 [label="B6", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node2 -> Node5 [label="B7", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node4 -> Node7 [label="B8", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node7 -> Node4 [label="B9", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node7 -> Node4 [label="B10", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node2 -> Node8 [label="B11", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node8 -> Node2 [label="B12", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node8 -> Node2 [label="B13", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node2 -> Node2 [label="B14", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node2 -> Node2 [label="B15", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node4 -> Node4 [label="B16", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node5 -> Node1 [label="B17", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node4 -> Node1 [label="B18", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node3 -> Node1 [label="B19", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node2 -> Node1 [label="B20", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    
+    
+    Node1 -> Node6 [label="POWER_OFF", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node2 -> Node6 [label="POWER_OFF", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node3 -> Node6 [label="POWER_OFF", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node4 -> Node6 [label="POWER_OFF", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+    Node5 -> Node6 [label="POWER_OFF", constraint = true , weight = 1, fontsize="40", penwidth="10", style=bold];
+  legend [shape=plaintext,fontsize="60" label=<
+   <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+      <TR>
+        <TD><B>States</B></TD>
+        <TD>Power Off (Initial State), Inactive Mode <BR/>
+            Version 1.x Status Check, Version 2.x Status Check <BR/>
+            Version_2.x Initializing, Version_1.x Initializing <BR/>
+            Version 2.x Waiting for CMD 8, Data Transfer Mode <BR/></TD>
+      </TR>
+      <TR>
+        <TD><B>Inputs</B></TD>
+        <TD>
+          MOSI.CMD ∈ {0, 1, ... ,59}<BR/>
+          MOSI.ARG ∈ {Data}<BR/>
+          MOSI.DATA ∈ {Data}<BR/>
+          CLK ∈ {alternating, assert_0, assert_1}<BR/>
+          READ_BLOCK_512(Address) ∈ {Data}<BR/>
+          CARD_BUSY ∈{Pure}<BR/>
+          CARD_FREE ∈{Pure}<BR/>
+          MAX_ADDRESS ∈{0x00000000, ...., 0xFFFFFFFF}}<BR/>
+          CARD_VERSION ∈{1.x, 2.x}<BR/>
+          CARD_VOLTAGE ∈{0, 1} (0 implies 3.3v and 1 implies 1.2V)<BR/>
+        </TD>
+      </TR>
+      <TR>
+        <TD><B>Outputs</B></TD>
+        <TD>
+          MISO.RESP ∈ {1,2,3...,7}<BR/>
+          MISO.ARG ∈ {Data}<BR/>
+          MISO.DATA ∈ {Data} <BR/>
+          WRITE_BLOCK_512(Address) ∈ {Data}
+        </TD>
+      </TR>
+      <TR>
+        <TD><B>State Variables</B></TD>
+        <TD>
+            read_cnt ∈ {0 , 1, 2 ,...2^32} <BR/>
+            write_cnt ∈ {0 , 1, 2 ,...2^32} <BR/>
+            write_done ∈ {True, False} <BR/> 
+            write_adddress ∈ {0x00000000, ..., 0xFFFFFFFF}<BR/>
+            write_more  ∈ {True, False} <BR/>
+            op_voltage ∈ {0, 1}
+        </TD>
+      </TR>
+    </TABLE>
+  >];
+}
