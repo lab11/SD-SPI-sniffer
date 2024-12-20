@@ -1,0 +1,65 @@
+digraph Card_CIM {
+    rankdir=LR; // Left-to-right layout
+    node [shape=circle]; // Nodes will be circular
+    label="Card State Machine"
+    Node1 [label="Inactive Mode"];
+    Node2 [label="Intitialization Mode"];
+    Node3 [label="Data Transfer Mode"];
+
+  legend [shape=plaintext, label=<
+   <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+      <TR>
+        <TD><B>States</B></TD>
+        <TD>Idle, Ready</TD>
+      </TR>
+      <TR>
+        <TD><B>Inputs</B></TD>
+        <TD>
+          MOSI.CMD ∈ {0, 1, ... ,59}<BR/>
+          MOSI.ARG ∈ {Data}<BR/>
+          MOSI.DATA ∈ {Data}<BR/>
+          CLK ∈ {alternating, assert_0, assert_1}<BR/>
+          READ_BLOCK_512(Address) ∈ {Data}<BR/>
+          CARD_BUSY ∈{True, False}<BR/>
+          MAX_ADDRESS ∈{0x00000000, ...., 0xFFFFFFFF}}<BR/>
+          CARD_VERSION ∈{1.x, 2.x}<BR/>
+          CARD_VOLTAGE ∈{0, 1} (0 implies 3.3v and 1 implies 1.2V)<BR/>
+        </TD>
+      </TR>
+      <TR>
+        <TD><B>Outputs</B></TD>
+        <TD>
+          MISO.RESP ∈ {1,2,3...,7}<BR/>
+          MISO.ARG ∈ {Data}<BR/>
+          MISO.DATA ∈ {Data} <BR/>
+          WRITE_BLOCK_512(Address) ∈ {Data}
+        </TD>
+      </TR>
+      <TR>
+        <TD><B>State Variables</B></TD>
+        <TD>
+            read_cnt ∈ {0 , 1, 2 ,...2^32} <BR/>
+            write_cnt ∈ {0 , 1, 2 ,...2^32} <BR/>
+            write_done ∈ {True, False} <BR/> 
+            write_adddress ∈ {0x00000000, ..., 0xFFFFFFFF}<BR/>
+            write_more  ∈ {True, False} <BR/>
+            cmd8_recv ∈ {pure}<BR/>
+            op_voltage ∈ {0, 1}<BR/>
+            card_busy ∈ {pure}<BR/>
+            card_ver ∈ {1.x, 2.x}<BR/>
+            card_ready ∈ {pure} 
+        </TD>
+      </TR>
+    </TABLE>
+  >];
+
+    //transitions
+
+    Node1 -> Node1 [label="B1", constraint = true , weight = 1, headlabel = "R"];
+    Node1 -> Node2 [label="B2", constraint = true , weight = 1, headlabel = "R"];
+    Node2 -> Node3 [dir=both, arrowhead=normal, arrowtail=dot, color=red, arrowtailsize=1.0, label="B3", headlabel = "R"];
+    Node3 -> Node2 [arrowhead=normal, arrowtailsize=1.0,label="B4", headlabel = "R"];
+    Node3 -> Node1 [dir=both, arrowhead=normal, arrowtail=dot, color=red, arrowtailsize=1.0, label="B5", headlabel = "R"];
+    Node2 -> Node1 [dir=both, arrowhead=normal, arrowtail=dot, color=red, arrowtailsize=1.0, label="B6", headlabel = "R"];
+
+}
