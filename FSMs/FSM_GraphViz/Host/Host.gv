@@ -14,7 +14,7 @@ digraph Host_SS {
    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
       <TR>
         <TD><B>States</B></TD>
-        <TD>Idle, Ready</TD>
+        <TD>Inactive, Voltage Check, Initialization, Data Transfer</TD>
       </TR>
       <TR>
         <TD><B>Inputs</B></TD>
@@ -66,8 +66,7 @@ digraph Host_SS {
     Node3 -> Node3 [label="H7", constraint = true , weight = 1,];
     Node3 -> Node4 [label="H8", constraint = true , weight = 1,];
     Node4 -> Node1 [dir=both, arrowhead=normal, arrowtail=dot, color=red, arrowtailsize=1.0, label="H9"]
-    Node1 -> Node1 [label="H10", constraint = true , weight = 1,];
-    Node2 -> Node1 [label="H11", constraint = true , weight = 1,];
-    Node3 -> Node1 [label="H12", constraint = true , weight = 1,];
-
+    Node3 -> Node1 [dir=both, arrowhead=normal, arrowtail=dot, color=red, arrowtailsize=1.0, label="H10"]
+    Node2 -> Node1 [dir=both, arrowhead=normal, arrowtail=dot, color=red, arrowtailsize=1.0, label="H11"]
+    Node1 -> Node1 [dir=both, arrowhead=normal, arrowtail=dot, color=red, arrowtailsize=1.0, label="H12"]
 }
