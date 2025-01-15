@@ -53,7 +53,7 @@ COMMAND_INFO = {
     10: ("SEND_CID", 2),
     11: ("obsolete", None),
     12: ("STOP_TRANSMISSION", 1),
-    13: ("SEND_STATUS", 1),
+    13: ("SEND_STATUS", 2),
     14: ("BUSTEST_R", 1),
     15: ("GO_INACTIVE_STATE", None),
     19: ("BUSTEST_W", 1),
@@ -108,6 +108,8 @@ def get_response_length(resp):
     """Return the length of the given response type."""
     if resp == 1:
         return 8
+    if resp == 2:
+        return 16
     elif resp == 5:
         return 16
     elif resp == 10:
@@ -218,79 +220,63 @@ def interpret_response1(bits):
 
     return info
 
-def interpret_response7(bits):
-    """
-    Physical Layer Specification 7.3.2.6
-    in response to SEND_IF_COND (CMD 8)
-    Structure :
-    [0 - 8] : R1
-    [8 - 12] : Command Version
-    [12 - 28] : Reserved bits
-    [28 - 32] : Voltage Accepted
-    [32 - 40 ] : Check Pattern
-    """
-    okay = True
-    start_bit = bits[0]
-    in_busy_state = bits[7]
-    info = "R7"
-    #info += str(bits[0:11])
-    if in_busy_state:
-        info += ", BUSY"
-    # add error flags
-    if bits[1]:
-        info += ", PARAM_ERROR"
-        okay = False
-    if bits[2]:
-        info += ", ADDRESS_OUT_OF_RANGE"
-        okay = False
-    if bits[3]:
-        info += ", ERASE_SEQUENCE_ERROR"
-        okay = False
-    if bits[4]:
-        info += ", COM_CRC_ERROR"
-        okay = False
-    if bits[5]:
-        info += ", ILLEGAL_COMMAND"
-        okay = False
-    if bits[6]:
-        info += ", ERASE_RESET"
-        okay = False
-    command_version = bits[8:12]
-    voltage_accepted = bits[28:32]
-    if voltage_accepted[3] != 1 :
-        info += ", VOLTAGE_NOT_3.3 {}".format(voltage_accepted)
-        okay = False
-    else:
-            info += ", VOLTAGE_3.3 {}".format(voltage_accepted)
-
-    if not okay:
-        info += ", ERROR"
-
-
-    return info
 
 def interpret_response2(bits):
-    """Return a string description from the response 2 bits."""
-    assert len(bits) == 136
-    return r"R2, CID or CSD"
-    okay = True
-    start_bit = bits[0]
-    transmission_bit = bits[1]
-    command_index = value_from_bits(bits[2:8])
-    device_status = bits[8:40]
-    crc7 = value_from_bits(bits[40:47])
-    end_bit = value_from_bits(bits[47:48])
-    if start_bit or transmission_bit or not end_bit:
-        okay = False
-    current_state = value_from_bits(device_status[19:23])
-    info = "R1, "
-    if current_state in CURRENT_STATE:
-        info += CURRENT_STATE[current_state]
-    else:
-        info += "UNKNOWN (%d)" % current_state
-        okay = False
-    if not okay:
-        info += ", ERROR"
+    """
+    Physical Layer Specification 7.3.2.3
+    in response to SEND_STAUS(CMD 13)
+    Structure :
+        Card is locked
+        wp erase skip I lock/unl
+        error
+        CC error
+        card ecc faileled
+        wp violation
+        erase param
+        out of range / csd overwrite
+        in idle state
+        erase reset
+        illegal command
+        com crc error
+        erase sequence error
+        address error
+        
+    """
+
+    assert len(bits) == 16
+
+    info = "R2"
+    if bits[1]:
+        info += ", card is locked"
+    if bits[2]:
+        info += ", wp erase skip I lock/unl"
+    if bits[3]:
+        info += ", error"
+    if bits[4]:
+        info += ", CC error"
+    if bits[5]:
+        info += ", card ecc faileled"
+    if bits[6]:
+        info += ", wp violation"
+    if bits[7]:
+        info += ", erase param"
+    if bits[8]:
+        info += ", out of range / csd overwrite"
+    if bits[9]:
+        info += ", in idle state"
+    if bits[10]:
+        info += ", erase reset"
+    if bits[11]:
+        info += ", illegal command"
+    if bits[12]:
+        info += ", com crc error"
+    if bits[13]:
+        info += ", erase sequence error"
+    if bits[14]:
+        info += ", address error"
+    if bits[15]:
+        info += ", parameter error"
+
     return info
 
 
@@ -354,6 +340,58 @@ def interpret_response5(bits):
     else:
         info += ",IDLE "
     info += ",{} ".format(rw_data)
+    return info
+
+
+def interpret_response7(bits):
+    """
+    Physical Layer Specification 7.3.2.6
+    in response to SEND_IF_COND (CMD 8)
+    Structure :
+    [0 - 8] : R1
+    [8 - 12] : Command Version
+    [12 - 28] : Reserved bits
+    [28 - 32] : Voltage Accepted
+    [32 - 40 ] : Check Pattern
+    """
+    okay = True
+    start_bit = bits[0]
+    in_busy_state = bits[7]
+    info = "R7"
+    #info += str(bits[0:11])
+    if in_busy_state:
+        info += ", BUSY"
+    # add error flags
+    if bits[1]:
+        info += ", PARAM_ERROR"
+        okay = False
+    if bits[2]:
+        info += ", ADDRESS_OUT_OF_RANGE"
+        okay = False
+    if bits[3]:
+        info += ", ERASE_SEQUENCE_ERROR"
+        okay = False
+    if bits[4]:
+        info += ", COM_CRC_ERROR"
+        okay = False
+    if bits[5]:
+        info += ", ILLEGAL_COMMAND"
+        okay = False
+    if bits[6]:
+        info += ", ERASE_RESET"
+        okay = False
+    command_version = bits[8:12]
+    voltage_accepted = bits[28:32]
+    if voltage_accepted[3] != 1 :
+        info += ", VOLTAGE_NOT_3.3 {}".format(voltage_accepted)
+        okay = False
+    else:
+            info += ", VOLTAGE_3.3 {}".format(voltage_accepted)
+
+    if not okay:
+        info += ", ERROR"
+
+
     return info
 
 
