@@ -5,9 +5,9 @@
   "description": "Saleae Logic 2.x high level analyzer for SDSPI communication",
   "apiVersion": "1.0.0",
   "extensions": {
-    "SDMMC from SPI paul": {
+    "SD-SPI from SPI": {
       "type": "HighLevelAnalyzer",
-      "entryPoint": "sdspi_from_spi.SdmmcFromSpiAnalyzer"
+      "entryPoint": "sdspi_from_spi.SDSPIFromSpiAnalyzer"
     }
   }
 }
