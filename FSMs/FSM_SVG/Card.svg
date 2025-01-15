@@ -1,0 +1,279 @@
+<?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="7044pt" height="4184pt" viewBox="0.00 0.00 7043.81 4184.15">
+<g id="graph0" class="graph" transform="translate(-60.917465581278066,4946.008556437365) scale(1.15348560506003)" data-name="Card_CIM">
+
+<polygon fill="white" stroke="none" points="-4,4 -4,-4180.15 7039.81,-4180.15 7039.81,4 -4,4"/>
+<text text-anchor="middle" x="3517.9" y="-16" font-family="Times,serif" font-size="40.00">Card State Machine</text>
+<!-- Node1 -->
+<g id="node1" class="node" pointer-events="visible" data-name="Node1">
+
+<ellipse fill="none" stroke="black" cx="1066" cy="-1904.15" rx="339.69" ry="339.69" stroke-width="10"/>
+<text text-anchor="middle" x="1066" y="-1880.15" font-family="Times,serif" font-size="80">Inactive Mode</text>
+</g>
+<!-- Node1&#45;&gt;Node1 -->
+<g id="edge2" class="edge" data-name="Node1-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="10" d="M877.73,-2192.82C908.04,-2234.05 970.8,-2261.74 1066,-2261.74 1150.79,-2261.74 1209.84,-2239.78 1243.16,-2205.85"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="1249.51,-2211.89 1249.34,-2198.6 1236.19,-2200.53 1249.51,-2211.89"/>
+<text text-anchor="middle" x="1066" y="-2273.74" font-family="Times,serif" font-size="40.00">B1</text>
+</g>
+<!-- Node1&#45;&gt;Node1 -->
+
+<!-- Node2 -->
+<g id="node2" class="node" pointer-events="visible" data-name="Node2">
+
+<ellipse fill="none" stroke="black" cx="2905.84" cy="-3051.15" rx="457.41" ry="457.41" stroke-width="10"/>
+<text text-anchor="middle" x="2905.84" y="-3027.15" font-family="Times,serif" font-size="80">Ver_1.x Initializing</text>
+</g>
+<!-- Node1&#45;&gt;Node2 -->
+<g id="edge4" class="edge" data-name="Node1-&gt;Node2">
+
+<path fill="none" stroke="black" stroke-width="10" d="M1405.26,-1964.79C1635.31,-2021.57 1932.92,-2127.52 2132,-2319.15 2200.07,-2384.67 2186,-2424.78 2216.68,-2514.15 2227.11,-2544.53 2216.36,-2557.76 2234.68,-2584.15 2299.66,-2677.73 2389.85,-2758.56 2483.04,-2825.44"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="2477.69,-2832.38 2490.91,-2831.02 2487.82,-2818.1 2477.69,-2832.38"/>
+<text text-anchor="middle" x="2183.34" y="-2526.15" font-family="Times,serif" font-size="40.00">B3</text>
+</g>
+<!-- Node3 -->
+<g id="node3" class="node" pointer-events="visible" data-name="Node3">
+
+<ellipse fill="none" stroke="black" cx="2905.84" cy="-1904.15" rx="671.32" ry="671.32" stroke-width="10"/>
+<text text-anchor="middle" x="2905.84" y="-1880.15" font-family="Times,serif" font-size="80">Ver_2.x Waiting for CMD_8</text>
+</g>
+<!-- Node1&#45;&gt;Node3 -->
+<g id="edge3" class="edge" data-name="Node1-&gt;Node3">
+
+<path fill="none" stroke="black" stroke-width="10" d="M1409.35,-1932.74C1633.36,-1948.07 1933,-1962.22 2214.33,-1953.18"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="2214.26,-1961.94 2223.96,-1952.86 2213.67,-1944.45 2214.26,-1961.94"/>
+<text text-anchor="middle" x="2183.34" y="-1967.15" font-family="Times,serif" font-size="40.00">B2</text>
+</g>
+<!-- Node2&#45;&gt;Node1 -->
+<g id="edge22" class="edge" data-name="Node1-&gt;Node6" data-comment="Node2-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="10" d="M1408.49,-1940.53C1652.56,-1986.05 1966.05,-2088.51 2132,-2319.15 2156.23,-2352.83 2147.17,-2650.75 2150,-2692.15 2164.56,-2905.15 2079.26,-3502.77 2234.68,-3649.15 2451.59,-3853.44 2606.87,-3668.15 2904.84,-3668.15 2904.84,-3668.15 2904.84,-3668.15 5709.15,-3668.15 6321.74,-3668.15 6624.74,-2840.5 6740.65,-2411.51"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="6749.1,-2413.79 6743.23,-2401.87 6732.19,-2409.26 6749.1,-2413.79"/>
+<text text-anchor="middle" x="4266.04" y="-3680.15" font-family="Times,serif" font-size="40.00">POWER_OFF</text>
+</g>
+<!-- Node2&#45;&gt;Node1 -->
+<g id="edge21" class="edge" data-name="Node2-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="10" d="M2480.86,-2869.47C2353.3,-2793.42 2226.92,-2691.94 2150,-2562.15 2122.4,-2515.57 2164.19,-2362.69 2132,-2319.15 1967.41,-2096.51 1665.87,-1993.28 1425.56,-1945.43"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="1427.3,-1936.86 1415.82,-1943.54 1423.96,-1954.04 1427.3,-1936.86"/>
+<text text-anchor="middle" x="2183.34" y="-2652.15" font-family="Times,serif" font-size="40.00">B20</text>
+</g>
+<!-- Node2&#45;&gt;Node1 -->
+<g id="edge15" class="edge" data-name="Node2-&gt;Node2" data-comment="Node2-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="10" d="M2875.81,-3512.25C2884.36,-3521.49 2894.37,-3526.6 2905.84,-3526.6 2911.57,-3526.6 2916.94,-3525.33 2921.95,-3522.89"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="2927.21,-3529.89 2929.84,-3516.86 2916.58,-3515.98 2927.21,-3529.89"/>
+<text text-anchor="middle" x="2905.84" y="-3538.6" font-family="Times,serif" font-size="40.00">B14</text>
+</g>
+<!-- Node2&#45;&gt;Node2 -->
+<g id="edge16" class="edge" data-name="Node2-&gt;Node2">
+
+<path fill="none" stroke="black" stroke-width="10" d="M2795.38,-3499.87C2817.51,-3545.41 2854.33,-3574.6 2905.84,-3574.6 2951.31,-3574.6 2985.33,-3551.85 3007.91,-3515.19" style=""/>
+<polygon fill="black" stroke="black" stroke-width="10" points="3015.52,-3519.5 3012.65,-3506.53 3000.17,-3511.1 3015.52,-3519.5"/>
+<text text-anchor="middle" x="2905.84" y="-3586.6" font-family="Times,serif" font-size="40.00" style="">B15</text>
+</g>
+<!-- Node2&#45;&gt;Node2 -->
+
+<!-- Node5 -->
+<g id="node5" class="node" pointer-events="visible" data-name="Node5">
+
+<ellipse fill="none" stroke="black" cx="5708.15" cy="-1830.15" rx="412.72" ry="412.72" stroke-width="10"/>
+<text text-anchor="middle" x="5708.15" y="-1809.15" font-family="Times,serif" font-size="70">Data Transfer Mode</text>
+</g><g id="edge7" class="edge" data-name="Node3-&gt;Node1" data-comment="Node5">
+
+<path fill="none" stroke="black" stroke-width="10" d="M2229.72,-1901.18C2225.36,-1901.17 2221.01,-1901.16 2216.68,-1901.15 1952.73,-1900.57 1654.69,-1901.39 1428.21,-1902.32"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="1428.22,-1893.57 1418.25,-1902.36 1428.29,-1911.07 1428.22,-1893.57"/>
+<text text-anchor="middle" x="2183.34" y="-1913.15" font-family="Times,serif" font-size="40.00">B6</text>
+</g>
+<!-- Node2&#45;&gt;Node5 -->
+<g id="edge8" class="edge" data-name="Node2-&gt;Node5">
+
+<path fill="none" stroke="black" stroke-width="10" d="M3308.76,-2825.34C3405.64,-2757.18 3502.54,-2675.76 3577,-2584.15 3650.43,-2493.8 3583.07,-2408.13 3679.68,-2343.15 3811,-2254.83 4955.08,-2374.28 5103.78,-2320.15 5211.84,-2280.81 5314.82,-2213.37 5404.12,-2140.89"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="5409.43,-2147.85 5411.61,-2134.74 5398.33,-2134.32 5409.43,-2147.85"/>
+<text text-anchor="middle" x="4266.04" y="-2355.15" font-family="Times,serif" font-size="40.00">B7</text>
+</g>
+<!-- Node3&#45;&gt;Node1 -->
+<g id="edge23" class="edge" data-name="Node2-&gt;Node6" data-comment="Node3-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="10" d="M3254.04,-3354.72C3379.58,-3445.89 3527.97,-3534.13 3679.68,-3581.15 3928.6,-3658.3 4604.65,-3661.96 4852.41,-3581.15 5605.2,-3335.6 6308.73,-2676.49 6624.42,-2349.49"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="6630.5,-2355.79 6631.14,-2342.51 6617.9,-2343.65 6630.5,-2355.79"/>
+<text text-anchor="middle" x="4987.1" y="-3585.15" font-family="Times,serif" font-size="40.00">POWER_OFF</text>
+</g><g id="edge12" class="edge" data-name="Node2-&gt;Node8" data-comment="Node3-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="10" d="M3367.61,-3029.1C3460.96,-3024.63 3560.47,-3019.87 3657.97,-3015.2"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="3658.36,-3023.94 3667.93,-3014.72 3657.52,-3006.46 3658.36,-3023.94"/>
+<text text-anchor="middle" x="3628.34" y="-3028.15" font-family="Times,serif" font-size="40.00">B11</text>
+</g>
+<!-- Node3&#45;&gt;Node1 -->
+
+<!-- Node3&#45;&gt;Node1 -->
+
+<!-- Node3&#45;&gt;Node3 -->
+<g id="edge20" class="edge" data-name="Node3-&gt;Node1" data-comment="Node3-&gt;Node3">
+
+<path fill="none" stroke="black" stroke-width="10" d="M2232.01,-1849.78C2226.88,-1849.56 2221.77,-1849.35 2216.68,-1849.15 1951.9,-1838.58 1652.93,-1853.72 1426.24,-1870.77" style=""/>
+<polygon fill="black" stroke="black" stroke-width="10" points="1425.9,-1862.02 1416.59,-1871.51 1427.23,-1879.47 1425.9,-1862.02"/>
+<text text-anchor="middle" x="2183.34" y="-1861.15" font-family="Times,serif" font-size="40.00" style="">B19</text>
+</g>
+<!-- Node4 -->
+<g id="node4" class="node" pointer-events="visible" data-name="Node4">
+
+<ellipse fill="none" stroke="black" cx="4266.04" cy="-896.15" rx="457.41" ry="457.41" stroke-width="10"/>
+<text text-anchor="middle" x="4266.04" y="-872.15" font-family="Times,serif" font-size="80">Ver_2.x Initializing</text>
+</g>
+<!-- Node3&#45;&gt;Node4 -->
+<g id="edge6" class="edge" data-name="Node3-&gt;Node4">
+
+<path fill="none" stroke="black" stroke-width="10" d="M3463.75,-1522.24C3530.91,-1474.37 3598.16,-1425.57 3661.68,-1378.15 3737.69,-1321.4 3817.77,-1259.2 3893.87,-1198.9"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="3899.19,-1205.85 3901.58,-1192.78 3888.31,-1192.14 3899.19,-1205.85"/>
+<text text-anchor="middle" x="3628.34" y="-1435.15" font-family="Times,serif" font-size="40.00">B5</text>
+</g>
+<!-- Node4&#45;&gt;Node1 -->
+<g id="edge24" class="edge" data-name="Node3-&gt;Node6" data-comment="Node4-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="10" d="M3566.51,-2047.4C4248.88,-2177.85 5345.58,-2337.99 6294.51,-2252.15 6377.39,-2244.65 6467,-2230.36 6547.37,-2215.24"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="6548.99,-2223.83 6557.18,-2213.37 6545.72,-2206.64 6548.99,-2223.83"/>
+<text text-anchor="middle" x="4987.1" y="-2264.15" font-family="Times,serif" font-size="40.00">POWER_OFF</text>
+</g>
+<!-- Node4&#45;&gt;Node1 -->
+<g id="edge19" class="edge" data-name="Node4-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="10" d="M3803.8,-900.96C3384.82,-917.23 2754.67,-971.77 2234.68,-1143.15 1897.56,-1254.26 1563.39,-1487.9 1339.48,-1667.17"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="1334.13,-1660.24 1331.81,-1673.33 1345.09,-1673.89 1334.13,-1660.24"/>
+<text text-anchor="middle" x="2905.84" y="-1155.15" font-family="Times,serif" font-size="40.00">B18</text>
+</g>
+<!-- Node4&#45;&gt;Node4 -->
+
+<!-- Node4&#45;&gt;Node4 -->
+<g id="edge17" class="edge" data-name="Node4-&gt;Node4">
+
+<path fill="none" stroke="black" stroke-width="10" d="M4209.59,-1355.04C4225.43,-1365.68 4244.25,-1371.6 4266.04,-1371.6 4281.2,-1371.6 4294.91,-1368.74 4307.19,-1363.42"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="4311.26,-1371.16 4315.83,-1358.69 4302.86,-1355.81 4311.26,-1371.16"/>
+<text text-anchor="middle" x="4266.04" y="-1383.6" font-family="Times,serif" font-size="40.00">B16</text>
+</g>
+<!-- Node4&#45;&gt;Node5 -->
+<g id="edge5" class="edge" data-name="Node4-&gt;Node5">
+
+<path fill="none" stroke="black" stroke-width="10" d="M4605.81,-1209.76C4687.26,-1269.8 4777.68,-1325.34 4870.41,-1362.15 4967.28,-1400.61 5009.57,-1340.58 5103.78,-1385.15 5114.01,-1389.99 5113.19,-1395.79 5121.78,-1403.15 5193.35,-1464.39 5273.13,-1526.34 5350.2,-1583.34"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="5344.69,-1590.15 5357.94,-1589.04 5355.08,-1576.07 5344.69,-1590.15"/>
+<text text-anchor="middle" x="4987.1" y="-1397.15" font-family="Times,serif" font-size="40.00">B4</text>
+</g>
+<!-- Node4&#45;&gt;Node5 -->
+
+<!-- Node5&#45;&gt;Node1 -->
+<g id="edge25" class="edge" data-name="Node4-&gt;Node6" data-comment="Node5-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="10" d="M4660.11,-1137.63C4800.64,-1211.7 4963.5,-1284.16 5121.78,-1324.15 5248.18,-1356.08 6181.34,-1295.43 6294.51,-1360.15 6504.66,-1480.33 6640.05,-1727.48 6717.07,-1915.45"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="6708.95,-1918.71 6720.81,-1924.7 6725.17,-1912.14 6708.95,-1918.71"/>
+<text text-anchor="middle" x="5708.15" y="-1372.15" font-family="Times,serif" font-size="40.00">POWER_OFF</text>
+</g>
+<!-- Node5&#45;&gt;Node1 -->
+<g id="edge9" class="edge" data-name="Node4-&gt;Node7" data-comment="Node5-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="10" d="M4728.31,-889.65C4850.72,-884.13 4982.55,-874.78 5103.78,-859.15 5106.98,-858.74 5110.19,-858.32 5113.4,-857.89"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="5114.42,-866.58 5123.14,-856.55 5112.04,-849.24 5114.42,-866.58"/>
+<text text-anchor="middle" x="4987.1" y="-894.15" font-family="Times,serif" font-size="40.00">B8</text>
+</g><g id="edge18" class="edge" data-name="Node5-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="10" d="M5292.85,-1873.51C4832.34,-1896.85 4098.47,-1855.85 3679.68,-1428.15 3647.47,-1395.26 3681.03,-1367.92 3661.68,-1326.15 3636.92,-1272.69 3630.33,-1249.19 3577,-1224.15 3509.5,-1192.45 2306.68,-1204.71 2234.68,-1224.15 1906.63,-1312.71 1576,-1518.73 1350.72,-1680.96"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="1345.84,-1673.69 1342.87,-1686.64 1356.1,-1687.87 1345.84,-1673.69"/>
+<text text-anchor="middle" x="3628.34" y="-1338.15" font-family="Times,serif" font-size="40.00">B17</text>
+</g>
+<!-- legend -->
+<!-- legend -->
+<!-- legend -->
+<g id="node6" class="node" pointer-events="visible" data-name="Node6" data-comment="legend">
+
+<ellipse fill="none" stroke="black" cx="6799.85" cy="-2160.15" rx="235.92" ry="235.92" stroke-width="10"/>
+<text text-anchor="middle" x="6799.85" y="-2136.15" font-family="Times,serif" font-size="80">Power off</text>
+</g><g id="edge26" class="edge" data-name="Node5-&gt;Node6" data-comment="legend">
+
+<path fill="none" stroke="black" stroke-width="10" d="M6107.95,-1950.92C6256.85,-1996.01 6421.46,-2045.86 6552.65,-2085.59"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="6549.92,-2093.91 6562.03,-2088.43 6554.99,-2077.16 6549.92,-2093.91"/>
+<text text-anchor="middle" x="6429.2" y="-2093.15" font-family="Times,serif" font-size="40.00">POWER_OFF</text>
+</g>
+<g id="edge1" class="edge" data-name="Node6-&gt;Node1" data-comment="legend">
+
+<path fill="none" stroke="black" stroke-width="10" d="M6774.88,-1920.82C6720.79,-1434.6 6571.86,-358.26 6294.51,-134.15 6092.05,29.45 5969.45,-115.15 5709.15,-115.15 2904.84,-115.15 2904.84,-115.15 2904.84,-115.15 2076.79,-115.15 1481.96,-1059.18 1218.47,-1575.71"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="1210.75,-1571.6 1214.02,-1584.48 1226.35,-1579.53 1210.75,-1571.6"/>
+<text text-anchor="middle" x="4266.04" y="-127.15" font-family="Times,serif" font-size="40.00">POWER_ON</text>
+</g>
+<g id="edge10" class="edge" data-name="Node7-&gt;Node4" data-comment="legend">
+
+<path fill="none" stroke="black" stroke-width="10" d="M5119.5,-782.81C4999.58,-794.01 4900.55,-803.52 4870.41,-807.15 4828.09,-812.24 4784.15,-817.93 4740.17,-823.9"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="4739.23,-815.2 4730.5,-825.22 4741.6,-832.54 4739.23,-815.2"/>
+<text text-anchor="middle" x="4987.1" y="-819.15" font-family="Times,serif" font-size="40.00">B9</text>
+</g>
+<!-- Node7 -->
+<g id="node7" class="node" pointer-events="visible" data-name="Node7">
+
+<ellipse fill="none" stroke="black" stroke-width="10" cx="5708.15" cy="-729.15" rx="586.23" ry="586.23"/>
+<text text-anchor="middle" x="5708.15" y="-705.15" font-family="Times,serif" font-size="80.00">Version 2.x Status Check</text>
+</g><g id="edge11" class="edge" data-name="Node7-&gt;Node4" data-comment="Node7">
+
+<path fill="none" stroke="black" stroke-width="10" d="M5117.24,-713.75C5034.13,-717.08 4949.95,-723.41 4870.41,-734.15 4823.17,-740.52 4774.38,-749.48 4725.95,-759.95" style=""/>
+<polygon fill="black" stroke="black" stroke-width="10" points="4724.14,-751.39 4716.25,-762.08 4727.9,-768.48 4724.14,-751.39"/>
+<text text-anchor="middle" x="4987.1" y="-746.15" font-family="Times,serif" font-size="40.00" style="">B10</text>
+</g>
+<!-- Node8 -->
+<g id="node8" class="node" pointer-events="visible" data-name="Node8">
+
+<ellipse fill="none" stroke="black" stroke-width="10" cx="4266.04" cy="-2986.15" rx="586.23" ry="586.23"/>
+<text text-anchor="middle" x="4266.04" y="-2962.15" font-family="Times,serif" font-size="80.00">Version 1.x Status Check</text>
+</g><!-- legend -->
+<g id="edge13" class="edge" data-name="Node8-&gt;Node2" data-comment="legend">
+
+<path fill="none" stroke="black" stroke-width="10" d="M3675.49,-2964.41C3670.87,-2964.32 3666.27,-2964.23 3661.68,-2964.15 3632.05,-2963.61 3624.58,-2962.29 3595,-2964.15 3525.46,-2968.53 3452.2,-2975.37 3380.45,-2983.34"/>
+<polygon fill="black" stroke="black" stroke-width="10" points="3379.73,-2974.62 3370.77,-2984.43 3381.69,-2992.01 3379.73,-2974.62"/>
+<text text-anchor="middle" x="3628.34" y="-2976.15" font-family="Times,serif" font-size="40.00">B12</text>
+</g><g id="edge14" class="edge" data-name="Node8-&gt;Node2" data-comment="legend">
+
+<path fill="none" stroke="black" stroke-width="10" d="M3680.36,-3065.84C3674.1,-3066.3 3667.88,-3066.73 3661.68,-3067.15 3572.35,-3073.12 3476.96,-3074.76 3385.1,-3073.97" style=""/>
+<polygon fill="black" stroke="black" stroke-width="10" points="3385.37,-3065.22 3375.28,-3073.86 3385.19,-3082.72 3385.37,-3065.22"/>
+<text text-anchor="middle" x="3628.34" y="-3082.15" font-family="Times,serif" font-size="40.00" style="">B13</text>
+</g>
+<!-- legend -->
+<g id="node9" class="node" pointer-events="visible" data-name="legend">
+
+<polygon fill="none" stroke="black" points="8,-3874.15 8,-4172.15 409,-4172.15 409,-3874.15 8,-3874.15"/>
+<text text-anchor="start" x="131.84" y="-4006.15" font-family="Times,serif" font-weight="bold" font-size="60.00">States</text>
+<polygon fill="none" stroke="black" points="409,-3874.15 409,-4172.15 2124,-4172.15 2124,-3874.15 409,-3874.15"/>
+<text text-anchor="start" x="777.49" y="-4113.15" font-family="Times,serif" font-size="60.00">Power Off (Initial State), Inactive Mode </text>
+<text text-anchor="start" x="544.07" y="-4041.15" font-family="Times,serif" font-size="60.00">            Version 1.x Status Check, Version 2.x Status Check </text>
+<text text-anchor="start" x="580.78" y="-3969.15" font-family="Times,serif" font-size="60.00">            Version_2.x Initializing, Version_1.x Initializing </text>
+<text text-anchor="start" x="525.83" y="-3897.15" font-family="Times,serif" font-size="60.00">            Version 2.x Waiting for CMD 8, Data Transfer Mode </text>
+<polygon fill="none" stroke="black" points="8,-3072.15 8,-3874.15 409,-3874.15 409,-3072.15 8,-3072.15"/>
+<text text-anchor="start" x="125.11" y="-3456.15" font-family="Times,serif" font-weight="bold" font-size="60.00">Inputs</text>
+<polygon fill="none" stroke="black" points="409,-3072.15 409,-3874.15 2124,-3874.15 2124,-3072.15 409,-3072.15"/>
+<text text-anchor="start" x="846.84" y="-3815.15" font-family="Times,serif" font-size="60.00">          MOSI.CMD ∈ {0, 1, ... ,59}</text>
+<text text-anchor="start" x="922.72" y="-3743.15" font-family="Times,serif" font-size="60.00">          MOSI.ARG ∈ {Data}</text>
+<text text-anchor="start" x="902.74" y="-3671.15" font-family="Times,serif" font-size="60.00">          MOSI.DATA ∈ {Data}</text>
+<text text-anchor="start" x="710.31" y="-3599.15" font-family="Times,serif" font-size="60.00">          CLK ∈ {alternating, assert_0, assert_1}</text>
+<text text-anchor="start" x="691.93" y="-3527.15" font-family="Times,serif" font-size="60.00">          READ_BLOCK_512(Address) ∈ {Data}</text>
+<text text-anchor="start" x="899.34" y="-3455.15" font-family="Times,serif" font-size="60.00">          CARD_BUSY ∈{Pure}</text>
+<text text-anchor="start" x="906.02" y="-3383.15" font-family="Times,serif" font-size="60.00">          CARD_FREE ∈{Pure}</text>
+<text text-anchor="start" x="523.12" y="-3311.15" font-family="Times,serif" font-size="60.00">          MAX_ADDRESS ∈{0x00000000, ...., 0xFFFFFFFF}}</text>
+<text text-anchor="start" x="814.35" y="-3239.15" font-family="Times,serif" font-size="60.00">          CARD_VERSION ∈{1.x, 2.x}</text>
+<text text-anchor="start" x="413.59" y="-3167.15" font-family="Times,serif" font-size="60.00">          CARD_VOLTAGE ∈{0, 1} (0 implies 3.3v and 1 implies 1.2V)</text>
+<text text-anchor="start" x="1206.5" y="-3095.15" font-family="Times,serif" font-size="60.00">        </text>
+<polygon fill="none" stroke="black" points="8,-2774.15 8,-3072.15 409,-3072.15 409,-2774.15 8,-2774.15"/>
+<text text-anchor="start" x="103.46" y="-2906.15" font-family="Times,serif" font-weight="bold" font-size="60.00">Outputs</text>
+<polygon fill="none" stroke="black" points="409,-2774.15 409,-3072.15 2124,-3072.15 2124,-2774.15 409,-2774.15"/>
+<text text-anchor="start" x="865.98" y="-3013.15" font-family="Times,serif" font-size="60.00">          MISO.RESP ∈ {1,2,3...,7}</text>
+<text text-anchor="start" x="922.72" y="-2941.15" font-family="Times,serif" font-size="60.00">          MISO.ARG ∈ {Data}</text>
+<text text-anchor="start" x="895.24" y="-2869.15" font-family="Times,serif" font-size="60.00">          MISO.DATA ∈ {Data} </text>
+<text text-anchor="start" x="618.63" y="-2797.15" font-family="Times,serif" font-size="60.00">          WRITE_BLOCK_512(Address) ∈ {Data}        </text>
+<polygon fill="none" stroke="black" points="8,-2332.15 8,-2774.15 409,-2774.15 409,-2332.15 8,-2332.15"/>
+<text text-anchor="start" x="12.69" y="-2536.15" font-family="Times,serif" font-weight="bold" font-size="60.00">State Variables</text>
+<polygon fill="none" stroke="black" points="409,-2332.15 409,-2774.15 2124,-2774.15 2124,-2332.15 409,-2332.15"/>
+<text text-anchor="start" x="820.35" y="-2715.15" font-family="Times,serif" font-size="60.00">            read_cnt ∈ {0 , 1, 2 ,...2^32} </text>
+<text text-anchor="start" x="810.33" y="-2643.15" font-family="Times,serif" font-size="60.00">            write_cnt ∈ {0 , 1, 2 ,...2^32} </text>
+<text text-anchor="start" x="832.79" y="-2571.15" font-family="Times,serif" font-size="60.00">            write_done ∈ {True, False} </text>
+<text text-anchor="start" x="555.11" y="-2499.15" font-family="Times,serif" font-size="60.00">             write_adddress ∈ {0x00000000, ..., 0xFFFFFFFF}</text>
+<text text-anchor="start" x="821.96" y="-2427.15" font-family="Times,serif" font-size="60.00">            write_more  ∈ {True, False} </text>
+<text text-anchor="start" x="871.9" y="-2355.15" font-family="Times,serif" font-size="60.00">            op_voltage ∈ {0, 1}        </text>
+</g>
+
+</g>
+</svg>

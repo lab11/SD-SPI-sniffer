@@ -1,0 +1,72 @@
+digraph Host_SS {
+    rankdir=LR; // Left-to-right layout
+    
+    node [shape=circle]; // Nodes will be circular
+    
+    label="Host State Machine"
+
+    Node1 [label="Inactive Mode"];
+    Node2 [label="Voltage Check"];
+    Node3 [label="Intitialization"];
+    Node4 [label="Data Transfer"];
+
+  legend [shape=plaintext, label=<
+   <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+      <TR>
+        <TD><B>States</B></TD>
+        <TD>Inactive, Voltage Check, Initialization, Data Transfer</TD>
+      </TR>
+      <TR>
+        <TD><B>Inputs</B></TD>
+        <TD>
+          MISO_RESP ∈ {1,2,3...,7}<BR/>
+          MISO_ARG ∈ {Data}<BR/>
+          MISO.DATA ∈ {Data}<BR/>
+          POWER_ON ∈ {Pure}<BR/>
+          POWER_OFF ∈ {Pure}<BR/>
+          DATA_READ.ADDRESS ∈ {0x00000000, ..., 0xFFFFFFFF}<BR/>
+          DATA_READ.COUNT ∈ I<BR/>
+          DATA_WRITE.ADDRESS ∈ {0x00000000, ..., 0xFFFFFFFF}<BR/>
+          DATA_WRITE.COUNT ∈ I<BR/>
+          DATA_WRITE.DATA ∈ {Data}<BR/>
+        </TD>
+      </TR>
+      <TR>
+        <TD><B>Outputs</B></TD>
+        <TD>
+          MOSI.CMD ∈ {0, 1, ... ,59}<BR/>
+          MOSI.ARG ∈ {Data}<BR/>
+          CLK ∈ {alternating, assert_0, assert_1}<BR/>
+          CS ∈ {True, False}<BR/>
+          DATA_READ.DATA ∈ {Data}
+          POWER_ON ∈ {Pure}
+          POWER_OFF ∈ {Pure}
+        </TD>
+      </TR>
+      <TR>
+        <TD><B>State Variables</B></TD>
+        <TD>
+            timer_cnt ∈ (0 ,1, 2, 3, 4, 5) <BR/>
+            pref_voltage ∈ {0, 1} (0 Implies 3.3V and 1 implies 1.2V)<BR/>
+            read_cnt ∈ {0,...2^32}<BR/>
+            write_cnt ∈ {0,...2^32}
+        </TD>
+      </TR>
+    </TABLE>
+  >];
+
+    //transitions
+
+    Node1 -> Node1 [label="H1", constraint = true , weight = 1,];
+    Node1 -> Node2 [label="H2", constraint = true , weight = 1,];
+    Node2 -> Node3 [label="H3", constraint = true , weight = 1,];
+    Node2 -> Node1 [label="H4", constraint = true , weight = 1,];
+    Node2 -> Node2 [label="H5", constraint = true , weight = 1,];
+    Node2 -> Node1 [label="H6", constraint = true , weight = 1,];
+    Node3 -> Node3 [label="H7", constraint = true , weight = 1,];
+    Node3 -> Node4 [label="H8", constraint = true , weight = 1,];
+    Node4 -> Node1 [dir=both, arrowhead=normal, arrowtail=dot, color=red, arrowtailsize=1.0, label="H9"]
+    Node3 -> Node1 [dir=both, arrowhead=normal, arrowtail=dot, color=red, arrowtailsize=1.0, label="H10"]
+    Node2 -> Node1 [dir=both, arrowhead=normal, arrowtail=dot, color=red, arrowtailsize=1.0, label="H11"]
+    Node1 -> Node1 [dir=both, arrowhead=normal, arrowtail=dot, color=red, arrowtailsize=1.0, label="H12"]
+}

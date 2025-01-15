@@ -1,0 +1,220 @@
+<?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="3310pt" height="3030pt" viewBox="0.00 0.00 3310.05 3030.04">
+<g id="graph0" class="graph" transform="translate(4,3026.0400390625) scale(1)" data-name="Card_CIM">
+
+<polygon fill="white" stroke="none" points="-4,4 -4,-3026.04 3306.05,-3026.04 3306.05,4 -4,4"/>
+<text text-anchor="middle" x="1651.03" y="-8.2" font-family="Times,serif" font-size="14.00">Card Data Transfer Mode</text>
+<!-- Node1 -->
+<g id="node1" class="node" pointer-events="visible" data-name="Node1">
+
+<ellipse fill="none" stroke="black" cx="956.5" cy="-1191.04" rx="99.02" ry="99.02" stroke-width="10"/>
+<text text-anchor="middle" x="956.5" y="-1167.04" font-family="Times,serif" font-size="80">Idle</text>
+</g>
+<!-- Node1&#45;&gt;Node1 -->
+
+<!-- Node2 -->
+<g id="node2" class="node" pointer-events="visible" data-name="Node2">
+
+<ellipse fill="none" stroke="black" cx="3015.85" cy="-1634.04" rx="286.4" ry="286.4" stroke-width="10"/>
+<text text-anchor="middle" x="3015.85" y="-1610.04" font-family="Times,serif" font-size="80">Read Ready</text>
+</g>
+<!-- Node1&#45;&gt;Node2 -->
+<g id="edge1" class="edge" data-name="Node1-&gt;Node3" data-comment="Node1-&gt;Node2">
+
+<path fill="none" stroke="black" stroke-width="7" d="M1060.11,-1187.08C1239.08,-1183.53 1617.42,-1191.05 1913,-1299.04 1922.03,-1302.34 1921.88,-1307.99 1931,-1311.04 1966.18,-1322.78 2004.13,-1330.51 2042.06,-1335.4"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="2041.29,-1341.47 2051.94,-1336.56 2042.73,-1329.31 2041.29,-1341.47"/>
+<text text-anchor="middle" x="1965.44" y="-1339.04" font-family="Times,serif" font-size="40.00">D1</text>
+</g><g id="edge2" class="edge" data-name="Node1-&gt;Node3" data-comment="Node1-&gt;Node2">
+
+<path fill="none" stroke="black" stroke-width="7" d="M1060.17,-1192.24C1247.76,-1195.65 1658.08,-1208.76 1999.89,-1259.04 2016.26,-1261.44 2033.03,-1264.26 2049.91,-1267.35" style=""/>
+<polygon fill="black" stroke="black" stroke-width="7" points="2048.56,-1273.33 2059.52,-1269.16 2050.83,-1261.29 2048.56,-1273.33"/>
+<text text-anchor="middle" x="1965.44" y="-1271.04" font-family="Times,serif" font-size="40.00" style="">D2</text>
+</g>
+<!-- Node3 -->
+<g id="node3" class="node" pointer-events="visible" data-name="Node3">
+
+<ellipse fill="none" stroke="black" cx="2321.32" cy="-1333.04" rx="258" ry="258" stroke-width="10"/>
+<text text-anchor="middle" x="2321.32" y="-1309.04" font-family="Times,serif" font-size="80">Read Busy</text>
+</g>
+<!-- Node1&#45;&gt;Node3 -->
+<g id="edge9" class="edge" data-name="Node1-&gt;Node4" data-comment="Node1-&gt;Node3">
+
+<path fill="none" stroke="black" stroke-width="7" d="M1050.37,-1146.54C1248.41,-1051.64 1719.36,-825.99 2028.74,-677.75"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="2030.93,-683.49 2037.31,-673.64 2025.64,-672.44 2030.93,-683.49"/>
+<text text-anchor="middle" x="1965.44" y="-733.04" font-family="Times,serif" font-size="40.00">D9</text>
+</g>
+<!-- Node1&#45;&gt;Node3 -->
+<g id="node5" class="node" pointer-events="visible" data-name="Node5" data-comment="Node1-&gt;Node3">
+
+<ellipse fill="none" stroke="black" stroke-width="10" cx="3015.85" cy="-414.04" rx="275.47" ry="275.47"/>
+<text text-anchor="middle" x="3015.85" y="-390.04" font-family="Times,serif" font-size="80.00">Write-Busy</text>
+</g>
+<!-- Node2&#45;&gt;Node1 -->
+<g id="edge5" class="edge" data-name="Node2-&gt;Node1">
+
+<path fill="none" stroke="black" d="M2738.52,-1722.81C2700.64,-1731.99 2661.98,-1739.84 2624.76,-1745.04 2357.63,-1782.3 2281.9,-1800.24 2017.89,-1745.04 1976.63,-1736.41 1954.84,-1741.79 1931,-1707.04 1905.33,-1669.62 1943.97,-1332.2 1913,-1299.04 1696.96,-1067.67 1276.76,-1119.79 1073.35,-1162.38" stroke-width="7"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="1072.36,-1156.33 1063.86,-1164.41 1074.92,-1168.31 1072.36,-1156.33"/>
+<text text-anchor="middle" x="2321.32" y="-1791.04" font-family="Times,serif" font-size="40">D5</text>
+</g><g id="edge10" class="edge" data-name="Node1-&gt;Node5" data-comment="Node2-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="7" d="M1058.28,-1171.05C1246.17,-1134.59 1663.09,-1057.4 2017.89,-1018.04 2085.02,-1010.59 2565.94,-1015.25 2624.76,-982.04 2742.51,-915.53 2832.33,-797.01 2895.92,-685.38"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="2901.11,-688.66 2900.66,-676.94 2890.43,-682.67 2901.11,-688.66"/>
+<text text-anchor="middle" x="2321.32" y="-1030.04" font-family="Times,serif" font-size="40.00">D10</text>
+</g>
+<!-- Node2&#45;&gt;Node1 -->
+
+<!-- Node2&#45;&gt;Node2 -->
+
+<!-- Node3&#45;&gt;Node1 -->
+<g id="edge7" class="edge" data-name="Node3-&gt;Node1">
+
+<path fill="none" stroke="black" d="M2082.95,-1221.99C2055.42,-1212.66 2027.36,-1204.66 1999.89,-1199.04 1670.83,-1131.69 1271.03,-1157.79 1076.01,-1177.24" stroke-width="7"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="1075.48,-1171.13 1066.15,-1178.24 1076.72,-1183.32 1075.48,-1171.13"/>
+<text text-anchor="middle" x="1965.44" y="-1211.04" font-family="Times,serif" font-size="40">D7</text>
+</g><g id="edge8" class="edge" data-name="Node2-&gt;Node1" data-comment="Node3-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="7" d="M2725.76,-1661.33C2451.69,-1684.33 2073.71,-1707.46 2017.89,-1666.04 1910.86,-1586.62 1964.96,-1507.91 1931,-1379.04 1921.71,-1343.79 1940.13,-1323.37 1913,-1299.04 1679.23,-1089.4 1273.18,-1129.51 1074.2,-1165.55" style=""/>
+<polygon fill="black" stroke="black" stroke-width="7" points="1073.22,-1159.5 1064.5,-1167.35 1075.46,-1171.54 1073.22,-1159.5"/>
+<text text-anchor="middle" x="2321.32" y="-1700.04" font-family="Times,serif" font-size="40.00" style="">D8</text>
+</g>
+<!-- Node3&#45;&gt;Node1 -->
+<g id="edge4" class="edge" data-name="Node2-&gt;Node3" data-comment="Node3-&gt;Node1">
+
+<path fill="none" stroke="black" stroke-width="7" d="M2783,-1458.95C2759.57,-1445.25 2735.57,-1432.65 2711.65,-1422.04 2675.43,-1405.97 2635.98,-1392.64 2596.55,-1381.63"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="2598.28,-1375.76 2587.02,-1379.05 2595.07,-1387.58 2598.28,-1375.76"/>
+<text text-anchor="middle" x="2677.2" y="-1434.04" font-family="Times,serif" font-size="40.00">D4</text>
+</g>
+<!-- Node3&#45;&gt;Node3 -->
+<g id="edge6" class="edge" data-name="Node3-&gt;Node3">
+
+<path fill="none" stroke="black" d="M2281.98,-1592.81C2292.22,-1603.09 2305.34,-1609.04 2321.32,-1609.04 2331.07,-1609.04 2339.74,-1606.83 2347.35,-1602.78" stroke-width="7"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="2350.96,-1607.72 2355.3,-1596.83 2343.63,-1597.92 2350.96,-1607.72"/>
+<text text-anchor="middle" x="2321.32" y="-1621.04" font-family="Times,serif" font-size="40">D6</text>
+</g>
+<!-- Node4 -->
+<g id="node4" class="node" pointer-events="visible" data-name="Node4">
+
+<ellipse fill="none" stroke="black" cx="2321.32" cy="-538.04" rx="303.37" ry="303.37" stroke-width="10"/>
+<text text-anchor="middle" x="2321.32" y="-514.04" font-family="Times,serif" font-size="80">Write-Ready</text>
+</g><g id="edge3" class="edge" data-name="Node3-&gt;Node2" data-comment="Node4">
+
+<path fill="none" stroke="black" stroke-width="7" d="M2562.59,-1437.47C2617.73,-1461.43 2676.83,-1487.12 2733.53,-1511.76"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="2730.91,-1517.3 2742.52,-1515.67 2735.79,-1506.07 2730.91,-1517.3"/>
+<text text-anchor="middle" x="2677.2" y="-1513.04" font-family="Times,serif" font-size="40.00">D3</text>
+</g>
+<!-- Node3&#45;&gt;Node4 -->
+
+<!-- Node4&#45;&gt;Node1 -->
+<g id="edge18" class="edge" data-name="Node4-&gt;Node1">
+
+<path fill="none" stroke="black" d="M2021.77,-610.32C1990.75,-620.26 1960,-631.18 1931,-643.04 1594.04,-780.79 1227.87,-1011.13 1056.46,-1124.24" stroke-width="7"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="1053.27,-1119 1048.31,-1129.63 1060.03,-1129.22 1053.27,-1119"/>
+<text text-anchor="middle" x="1965.44" y="-655.04" font-family="Times,serif" font-size="40">D18</text>
+</g>
+<!-- Node4&#45;&gt;Node3 -->
+
+<!-- Node4&#45;&gt;Node4 -->
+<g id="edge13" class="edge" data-name="Node4-&gt;Node4">
+
+<path fill="none" stroke="black" d="M2304.09,-845.69C2308.8,-854.5 2314.55,-859.47 2321.32,-859.47 2323.44,-859.47 2325.46,-858.99 2327.37,-858.05" stroke-width="7"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="2331.9,-862.18 2334.06,-850.66 2322.81,-853.97 2331.9,-862.18"/>
+<text text-anchor="middle" x="2321.32" y="-871.47" font-family="Times,serif" font-size="40">D13</text>
+</g><g id="edge15" class="edge" data-name="Node4-&gt;Node4">
+
+<path fill="none" stroke="black" stroke-width="7" d="M2262.94,-840.63C2273.1,-880.69 2292.57,-907.47 2321.32,-907.47 2346.15,-907.47 2364.05,-887.52 2375.02,-856.28" style=""/>
+<polygon fill="black" stroke="black" stroke-width="7" points="2380.79,-858.38 2377.79,-847.05 2369.05,-854.87 2380.79,-858.38"/>
+<text text-anchor="middle" x="2321.32" y="-919.47" font-family="Times,serif" font-size="40.00" style="">D15</text>
+</g>
+<!-- Node4&#45;&gt;Node4 -->
+<g id="edge11" class="edge" data-name="Node4-&gt;Node5" data-comment="Node4-&gt;Node4">
+
+<path fill="none" stroke="black" stroke-width="7" d="M2624.82,-483.87C2657.67,-477.99 2691.06,-472.01 2723.77,-466.15"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="2724.41,-472.26 2733.18,-464.47 2722.25,-460.2 2724.41,-472.26"/>
+<text text-anchor="middle" x="2677.2" y="-492.04" font-family="Times,serif" font-size="40.00">D11</text>
+</g>
+<!-- Node4&#45;&gt;Node4 -->
+<g id="edge20" class="edge" data-name="Node5-&gt;Node1" data-comment="Node4-&gt;Node4">
+
+<path fill="none" stroke="black" stroke-width="7" d="M2788.99,-249.51C2737.39,-220.04 2681.09,-193.75 2624.76,-178.04 2364.96,-105.56 2270.9,-84.58 2017.89,-178.04 1440.81,-391.2 965.16,-463.93 956.62,-1069.35"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="950.49,-1069.29 956.55,-1079.33 962.74,-1069.38 950.49,-1069.29"/>
+<text text-anchor="middle" x="2321.32" y="-190.04" font-family="Times,serif" font-size="40.00">D20</text>
+</g>
+<!-- legend -->
+<!-- Node5&#45;&gt;Node5 -->
+<g id="edge12" class="edge" data-name="Node5-&gt;Node5">
+
+<path fill="none" stroke="black" stroke-width="7" d="M3015.85,-134.04C2979.8,-132.98 2974.45,-124.13 2999.8,-129.69"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="2998.13,-135.59 3009.38,-132.29 3001.33,-123.76 2998.13,-135.59"/>
+<text text-anchor="middle" x="3015.85" y="-84.8" font-family="Times,serif" font-size="40.00">D12</text>
+</g>
+<!-- Node5&#45;&gt;Node5 -->
+<g id="edge14" class="edge" data-name="Node5-&gt;Node5">
+
+<path fill="none" stroke="black" stroke-width="7" d="M2998.94,-693.75C3003.52,-702.38 3009.15,-707.27 3015.85,-707.27 3017.84,-707.27 3019.73,-706.84 3021.53,-706.01"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="3025.99,-710.21 3028.23,-698.69 3016.96,-701.93 3025.99,-710.21"/>
+<text text-anchor="middle" x="3015.85" y="-719.27" font-family="Times,serif" font-size="40.00">D14</text>
+</g>
+<!-- Node5&#45;&gt;Node5 -->
+<g id="edge16" class="edge" data-name="Node5-&gt;Node5">
+
+<path fill="none" stroke="black" stroke-width="7" d="M2959.11,-688.6C2968.41,-728.31 2987.33,-755.27 3015.85,-755.27 3040.36,-755.27 3057.78,-735.36 3068.09,-704.56" style=""/>
+<polygon fill="black" stroke="black" stroke-width="7" points="3073.96,-706.33 3070.77,-695.05 3062.17,-703.01 3073.96,-706.33"/>
+<text text-anchor="middle" x="3015.85" y="-767.27" font-family="Times,serif" font-size="40.00" style="">D16</text>
+</g>
+<!-- Node5&#45;&gt;Node5 -->
+<g id="edge17" class="edge" data-name="Node5-&gt;Node5">
+
+<path fill="none" stroke="black" stroke-width="7" d="M3015.85,-134.04C2931.19,-126.8 2931.19,-72.8 3015.85,-72.8 3094.72,-72.8 3100.11,-119.67 3032.02,-131.93" style=""/>
+<polygon fill="black" stroke="black" stroke-width="7" points="3031.62,-125.8 3022.49,-133.17 3033.2,-137.95 3031.62,-125.8"/>
+<text text-anchor="middle" x="3015.85" y="-36.8" font-family="Times,serif" font-size="40.00" style="">D17</text>
+</g>
+<!-- legend -->
+<g id="node6" class="node" pointer-events="visible" data-name="legend">
+
+<polygon fill="none" stroke="black" points="8.5,-2864.04 8.5,-3018.04 409.5,-3018.04 409.5,-2864.04 8.5,-2864.04"/>
+<text text-anchor="start" x="132.34" y="-2924.04" font-family="Times,serif" font-weight="bold" font-size="60">States</text>
+<polygon fill="none" stroke="black" points="409.5,-2864.04 409.5,-3018.04 1905.5,-3018.04 1905.5,-2864.04 409.5,-2864.04"/>
+<text text-anchor="start" x="786.76" y="-2959.04" font-family="Times,serif" font-size="60">Idle, Ready busy, Read Ready </text>
+<polygon fill="none" stroke="black" points="8.5,-2350.04 8.5,-2864.04 409.5,-2864.04 409.5,-2350.04 8.5,-2350.04"/>
+<text text-anchor="start" x="792.59" y="-2887.04" font-family="Times,serif" font-size="60">        Write Ready, Write Busy</text>
+<polygon fill="none" stroke="black" points="409.5,-2350.04 409.5,-2864.04 1905.5,-2864.04 1905.5,-2350.04 409.5,-2350.04"/>
+<text text-anchor="start" x="125.61" y="-2590.04" font-family="Times,serif" font-size="60" font-weight="bold">Inputs</text>
+<text text-anchor="start" x="737.84" y="-2805.04" font-family="Times,serif" font-size="60">          MOSI.CMD ∈ {0, 1, ... ,59}</text>
+<text text-anchor="start" x="813.72" y="-2733.04" font-family="Times,serif" font-size="60">          MOSI.ARG ∈ {Data}</text>
+<text text-anchor="start" x="793.74" y="-2661.04" font-family="Times,serif" font-size="60">          MOSI.DATA ∈ {Data}</text>
+<text text-anchor="start" x="582.93" y="-2589.04" font-family="Times,serif" font-size="60">          READ_BLOCK_512(Address) ∈ {Data}</text>
+<text text-anchor="start" x="710.37" y="-2517.04" font-family="Times,serif" font-size="60">          CARD_BUSY ∈{True, False}</text>
+<text text-anchor="start" x="414.12" y="-2445.04" font-family="Times,serif" font-size="60">          MAX_ADDRESS ∈{0x00000000, ...., 0xFFFFFFFF}}</text>
+<polygon fill="none" stroke="black" points="8.5,-2052.04 8.5,-2350.04 409.5,-2350.04 409.5,-2052.04 8.5,-2052.04"/>
+<text text-anchor="start" x="1097.5" y="-2373.04" font-family="Times,serif" font-size="60">        </text>
+<polygon fill="none" stroke="black" points="409.5,-2052.04 409.5,-2350.04 1905.5,-2350.04 1905.5,-2052.04 409.5,-2052.04"/>
+<text text-anchor="start" x="103.96" y="-2184.04" font-family="Times,serif" font-size="60" font-weight="bold">Outputs</text>
+<text text-anchor="start" x="756.98" y="-2291.04" font-family="Times,serif" font-size="60">          MISO.RESP ∈ {1,2,3...,7}</text>
+<text text-anchor="start" x="813.72" y="-2219.04" font-family="Times,serif" font-size="60">          MISO.ARG ∈ {Data}</text>
+<text text-anchor="start" x="786.24" y="-2147.04" font-family="Times,serif" font-size="60">          MISO.DATA ∈ {Data} </text>
+<polygon fill="none" stroke="black" points="8.5,-1682.04 8.5,-2052.04 409.5,-2052.04 409.5,-1682.04 8.5,-1682.04"/>
+<text text-anchor="start" x="509.63" y="-2075.04" font-family="Times,serif" font-size="60">          WRITE_BLOCK_512(Address) ∈ {Data}        </text>
+<polygon fill="none" stroke="black" points="409.5,-1682.04 409.5,-2052.04 1905.5,-2052.04 1905.5,-1682.04 409.5,-1682.04"/>
+<text text-anchor="start" x="13.19" y="-1850.04" font-family="Times,serif" font-size="60" font-weight="bold">State Variables</text>
+<text text-anchor="start" x="918.42" y="-1993.04" font-family="Times,serif" font-size="60">            read_cnt c I </text>
+<text text-anchor="start" x="899.22" y="-1921.04" font-family="Times,serif" font-size="60">            write_cnt ∈ I </text>
+<text text-anchor="start" x="723.79" y="-1849.04" font-family="Times,serif" font-size="60">            write_done ∈ {True, False} </text>
+<text text-anchor="start" x="446.11" y="-1777.04" font-family="Times,serif" font-size="60">             write_adddress ∈ {0x00000000, ..., 0xFFFFFFFF}</text>
+<text text-anchor="start" x="580.41" y="-1705.04" font-family="Times,serif" font-size="60.00">            write_more  ∈ {stop ,single ,multi}        </text>
+<polygon fill="none" stroke="black" points="8.5,-1312.04 8.5,-1682.04 409.5,-1682.04 409.5,-1312.04 8.5,-1312.04"/>
+<text text-anchor="start" x="43.99" y="-1480.04" font-family="Times,serif" font-weight="bold" font-size="60.00">Initialization</text>
+<polygon fill="none" stroke="black" points="409.5,-1312.04 409.5,-1682.04 1905.5,-1682.04 1905.5,-1312.04 409.5,-1312.04"/>
+<text text-anchor="start" x="908.97" y="-1623.04" font-family="Times,serif" font-size="60.00">            read_cnt := 0</text>
+<text text-anchor="start" x="898.96" y="-1551.04" font-family="Times,serif" font-size="60.00">            write_cnt := 0</text>
+<text text-anchor="start" x="828.96" y="-1479.04" font-family="Times,serif" font-size="60.00">            write_done:= False </text>
+<text text-anchor="start" x="688.13" y="-1407.04" font-family="Times,serif" font-size="60.00">             write_adddress := 0x00000000</text>
+<text text-anchor="start" x="778.96" y="-1335.04" font-family="Times,serif" font-size="60.00">            write_more := stop        </text>
+</g><g id="edge19" class="edge" data-name="Node5-&gt;Node4" data-comment="legend">
+
+<path fill="none" stroke="black" stroke-width="7" d="M2770.16,-278.97C2723.18,-258.75 2673.43,-241.02 2624.76,-230.04 2617.71,-228.44 2399.67,-222.65 2337.64,-226.34"/>
+<polygon fill="black" stroke="black" stroke-width="7" points="2336.8,-220.27 2327.94,-227.94 2338.8,-232.36 2336.8,-220.27"/>
+<text text-anchor="middle" x="2677.2" y="-265.04" font-family="Times,serif" font-size="40.00">D19</text>
+</g>
+
+</g>
+</svg>
