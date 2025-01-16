@@ -12,7 +12,14 @@ https://github.com/timkostka/saleae_sdmmc_from_spi
 
 """
 
+"""
+TO DO :
+- Add R4
+- better message type readability
+- check command and response
+- better timimg visualization
 
+"""
 
 
 
