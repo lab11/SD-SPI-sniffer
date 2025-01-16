@@ -15,9 +15,26 @@ https://github.com/timkostka/saleae_sdmmc_from_spi
 ## imports 
 from saleae.data.timing import GraphTimeDelta
 from saleae.analyzers import HighLevelAnalyzer, AnalyzerFrame
-#from common import gvars
 
-EXPECT_DATA = 11
+
+
+
+
+
+
+# states (CURRENT_STATE)
+MESSAGE_TYPE = {
+    0: "COMMAND",
+    1: "RESPONSE1",
+    2: "RESPONSE2",
+    3: "RESPONSE3",
+    5: "RESPONSE5",
+    7: "RESPONSE7",
+    10: "ACK_DATA_BLOCK_MOSI",
+    11: "ACK_DATA_BLOCK_MISO",
+    12: "DATA_BLOCK_MOSI",
+    13: "DATA_BLOCK_MISO",
+}
 
 
 # states (CURRENT_STATE)
@@ -59,16 +76,16 @@ COMMAND_INFO = {
     19: ("BUSTEST_W", 1),
     # Block-oriented read commands (class 2)
     16: ("SET_BLOCKLEN", 1),
-    17: ("READ_SINGLE_BLOCK", EXPECT_DATA),
-    18: ("READ_MULTIPLE_BLOCK", EXPECT_DATA ),
-    21: ("SEND_TUNING_BLOCK", EXPECT_DATA ),
+    17: ("READ_SINGLE_BLOCK", 11),
+    18: ("READ_MULTIPLE_BLOCK", 11),
+    21: ("SEND_TUNING_BLOCK", 11 ),
     # Class 3 commands
     20: ("obsolete", None),
     22: ("reserved", None),
     # Block-oriented write commands (class 4)
     23: ("SET_BLOCK_COUNT", 1),
-    24: ("WRITE_BLOCK", EXPECT_DATA),
-    25: ("WRITE_MULTIPLE_BLOCK", EXPECT_DATA),
+    24: ("WRITE_BLOCK", 10),
+    25: ("WRITE_MULTIPLE_BLOCK", 10),
     26: ("PROGRAM_CID", 1),
     27: ("PROGRAM_CSD", 1),
     49: ("SET_TIME", 1),
@@ -112,10 +129,10 @@ def get_response_length(resp):
         return 16
     elif resp == 5:
         return 16
-    elif resp == 10:
-        return 515*8
-    elif resp == 11:
+    elif resp == 10 or resp == 11:
         return 8
+    elif resp == 12 or resp == 13:
+        return 515*8
     elif resp == 2:
         return 136
     elif resp == 7:
@@ -439,6 +456,11 @@ class dataLineState:
         if (value == 255 ) and not self.message_bits:
             return None
         
+        # if no message is expected, ignore value
+        if (not self.is_message_expected(value)) and (self.message_bits is None):
+            print("warning : byte received is %s but no message expected, byte is discarded" % hex(value))
+            return None
+
         #if there this is the first message, set the first time
         if not self.first_time:
             self.first_time = start_time
@@ -449,7 +471,7 @@ class dataLineState:
         if not self.message_bits:
             count = 0
             # remove ones at the beginning if this is not a data block
-            while new_bits[0] and dataLineState.expected_message_type != 10:
+            while new_bits[0] and dataLineState.expected_message_type < 10:
                 count += 1
                 del new_bits[0]
             self.message_start = start_time + GraphTimeDelta(count * float(bit_length))
@@ -507,13 +529,17 @@ class mosiLineState (dataLineState):
         # determine if response or command
         transmission_bit = bits[1]
         first_byte = bits[0:8]
-        if first_byte == [1, 1, 1, 1, 1, 1, 0, 0]:
+        if dataLineState.this_message_type == 12 and  first_byte == [1, 1, 1, 1, 1, 1, 0, 0]:
             data  = interpret_data_block(bits)
+            dataLineState.expected_message_type = None
+            dataLineState.expected_message_length = 48
 
-        elif first_byte == [1, 1, 1, 1, 1, 1, 0, 1]:
+        elif dataLineState.this_message_type == 12 and  first_byte == [1, 1, 1, 1, 1, 1, 0, 1]:
             data  = interpret_data_block(bits)
+            dataLineState.expected_message_type = None
+            dataLineState.expected_message_length = 48
 
-        elif first_byte == [1, 1, 1, 1, 1, 1, 1 ,0]:
+        elif dataLineState.this_message_type == 12 and first_byte == [1, 1, 1, 1, 1, 1, 1 ,0]:
             data  = interpret_data_block(bits)
             dataLineState.expected_message_type = None
             dataLineState.expected_message_length = 48
@@ -526,6 +552,10 @@ class mosiLineState (dataLineState):
             dataLineState.expected_message_length = get_response_length(
                 dataLineState.expected_message_type
             )
+        elif dataLineState.this_message_type >= 12 :
+            # if there is a data block on mosi line, we don't listen to the miso line
+            bits = []
+            data = ""
         else:
             dataLineState.expected_message_type = None
             dataLineState.expected_message_length = 48
@@ -534,6 +564,13 @@ class mosiLineState (dataLineState):
 
         return data
            
+    def is_message_expected(self, value):
+
+        if dataLineState.expected_message_type == 12 and value in [252, 253, 254]:
+            print("expected message type : %s" % dataLineState.expected_message_type)
+            return True
+        return dataLineState.expected_message_type is None
+
         
 class misoLineState (dataLineState):
         
@@ -552,13 +589,17 @@ class misoLineState (dataLineState):
         print("MISO")
         transmission_bit = bits[1]
         first_byte = bits[0:8]
-        if 0 and first_byte == [1, 1, 1, 1, 1, 1, 0, 0]:
+        if dataLineState.this_message_type == 13 and  first_byte == [1, 1, 1, 1, 1, 1, 0, 0]:
             data  = interpret_data_block(bits)
+            dataLineState.expected_message_type = None
+            dataLineState.expected_message_length = 48
 
-        elif 0 and first_byte == [1, 1, 1, 1, 1, 1, 0, 1]:
+        elif dataLineState.this_message_type == 13 and  first_byte == [1, 1, 1, 1, 1, 1, 0, 1]:
             data  = interpret_data_block(bits)
+            dataLineState.expected_message_type = None
+            dataLineState.expected_message_length = 48
 
-        elif dataLineState.this_message_type == 10 or (0 and first_byte == [1, 1, 1, 1, 1, 1, 1 ,0]):
+        elif dataLineState.this_message_type == 13 and first_byte == [1, 1, 1, 1, 1, 1, 1 ,0]:
             data  = interpret_data_block(bits)
             dataLineState.expected_message_type = None
             dataLineState.expected_message_length = 48
@@ -573,17 +614,31 @@ class misoLineState (dataLineState):
                 data = interpret_response3(bits)
             elif dataLineState.this_message_type == 5:
                 data = interpret_response5(bits)
-            elif dataLineState.this_message_type == 11:
-                data = interpret_response1(bits)
-                dataLineState.expected_message_type = 10
-                dataLineState.expected_message_length = 515*8
             elif dataLineState.this_message_type == 7:
                 data = interpret_response7(bits)
+            elif dataLineState.this_message_type == 10:
+                data = interpret_response1(bits)
+                dataLineState.expected_message_type = 12
+                dataLineState.expected_message_length = 515*8
+            elif dataLineState.this_message_type == 11:
+                data = interpret_response1(bits)
+                dataLineState.expected_message_type = 13
+                dataLineState.expected_message_length = 515*8
+            elif dataLineState.this_message_type >= 12 :
+                # if there is a data block on mosi line, we don't listen to the miso line
+                bits = []
+                data = ""
             else:
                 print("Unknown response type")
                 data = "R%s" % dataLineState.this_message_type
 
         return data
+    
+    def is_message_expected(self, value):
+        if dataLineState.expected_message_type == 13 and value in [252, 253, 254]:
+            print("expected message type : %s" % dataLineState.expected_message_type)
+            return True
+        return dataLineState.expected_message_type in [1,2,3,5,7,10,11]
 
 
 class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
