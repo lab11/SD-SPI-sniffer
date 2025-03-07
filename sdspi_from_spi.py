@@ -509,11 +509,25 @@ class dataLineState:
         #print the data in binary if small, in hex otherwise
         if len(bits)<= 136:
             print("bits (bin): "+ bin(value_from_bits(bits)))
+            print("bits (hex): "+ hex(value_from_bits(bits)))
         else:
-            #print("bits (hex): "+ hex(value_from_bits(bits)))
+            print("bits (hex): "+ hex(value_from_bits(bits)))
             pass
+        
 
-        print("Returned data : "+ data)
+        hex_data = hex(value_from_bits(bits))
+        ascii_data = ""
+        for i in range(2, len(hex_data), 2):
+            #print("hex data: "+ hex_data[i:i+2])
+            # print the data ascii character
+            if len(hex_data[i:i+2]) == 2:
+                #print("ascii data: "+ chr(int(hex_data[i:i+2], 16)))
+                ascii_data += chr(int(hex_data[i:i+2], 16))
+
+        #replace spaces with a dot
+        ascii_data = ascii_data.replace(" ", ".")
+        print("Ascii data: " + ascii_data)
+
         print(
             "start=%s, duration=%s"
             % (self.message_start, self.message_end - self.message_start)
@@ -522,6 +536,7 @@ class dataLineState:
             "message_start": self.message_start,
             "message_end": self.message_end,
             "data": data,
+            "Ascii_data": ascii_data
         }
         self.message_bits = None
         self.debug("Expected next message type : %s" % dataLineState.expected_message_type)
@@ -686,6 +701,7 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 "end_time": mosi_data["message_end"],
                 "mosi_data": mosi_data["data"],
                 "miso_data" : "",
+                "Ascii_data": mosi_data["Ascii_data"]
             }
         elif miso_data: 
             #miso_data["message_start"] = miso_data["message_end"] 
@@ -694,6 +710,7 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 "end_time": miso_data["message_end"],
                 "mosi_data": "",
                 "miso_data" : miso_data["data"],
+                "Ascii_data": miso_data["Ascii_data"]
             }
         elif mosi_data and miso_data:
             # not sure what to do here, but it shouldn't happen
@@ -703,6 +720,7 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 "end_time": mosi_data["message_end"],
                 "mosi_data": mosi_data["data"] + "error",
                 "miso_data" : miso_data["data"] + "error",
+                "Ascii_data": mosi_data["Ascii_data"]
             }
         else:
             return None
@@ -717,6 +735,6 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
             data["start_time"],
             data["end_time"],
             {"mosi_data": data["mosi_data"],
-            "miso_data": data["miso_data"]}
+            "miso_data": data["miso_data"], "Ascii_data": data["Ascii_data"]}
             #to do : have better visualtion of the data
         )
