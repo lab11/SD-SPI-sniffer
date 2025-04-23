@@ -194,9 +194,10 @@ def interpret_command(bits):
         okay = False
     if command_index in COMMAND_INFO:
         info = get_command_name(command_index) + " (CMD%d)" % command_index
+        info += ", arg:%d" % argument
     else:
         info = "CMD%d" % command_index
-    info += ", arg:%d" % argument
+        info += ", arg:%d" % argument
     if not okay:
         info += ", ERROR"
     return info
