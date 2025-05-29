@@ -182,7 +182,7 @@ def value_from_bits(bits):
 
 def interpret_command(bits):
     """Return a string description from the command bits."""
-    assert len(bits) == 48, "bits length is %d, bits are %s, " %(len(bits), hex(sum([(bits[i]==True)*2**(len(bits)-i) for i in range(len(bits))])))
+    assert len(bits) == 48, "bits length is %d, bits are %s, " %(len(bits),str(hex(value_from_bits(bits))))
     okay = True
     start_bit = bits[0]
     transmission_bit = bits[1]
@@ -210,7 +210,10 @@ def interpret_data_block(bits):
     okay = True
 
     info = "DATA_BLOCK "
-    info += hex(sum([(bits[i+8]==True)*2**(data_block_size-i) for i in range(data_block_size)]))
+    # Convert the data block bits (excluding the first 8 bits) to an integer, then to hex
+    data_bits = bits[8:]
+    value = value_from_bits(data_bits)
+    info += str(hex(value))
 
     if not okay:
         info += ", ERROR"
@@ -487,14 +490,15 @@ class dataLineState:
             self.message_start = start_time + GraphTimeDelta(count * float(bit_length))
             self.message_bits = new_bits
         else:
-            # add bits to command
+            # add bits to message
             self.message_bits += new_bits
 
         # if we don't have enough bits, return None
         if len(self.message_bits) < dataLineState.expected_message_length:
             return None
         
-        # if we reached this point, we have a response or a command
+        # ! if we reached this point, we have a full response or a command
+
         this_message_length = dataLineState.expected_message_length
         dataLineState.this_message_type = dataLineState.expected_message_type
 
