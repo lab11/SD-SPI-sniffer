@@ -1,11 +1,11 @@
 {
-  "name": "SDSPI from SPI", 
-  "version": "0.1",
+  "name": "SDSPI analyzer", 
+  "version": "1.0",
   "author": "Paul de La Sayette, Jash Gujarathi",
   "description": "Saleae Logic 2.x high level analyzer for SDSPI communication",
   "apiVersion": "1.0.0",
   "extensions": {
-    "SDMMC from SPI paul": {
+    "SDSPI analyzer": {
       "type": "HighLevelAnalyzer",
       "entryPoint": "sdspi_from_spi.SdmmcFromSpiAnalyzer"
     }
