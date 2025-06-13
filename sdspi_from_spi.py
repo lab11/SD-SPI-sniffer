@@ -26,8 +26,9 @@ TO DO :
 
 ## imports 
 from saleae.data.timing import GraphTimeDelta
-from saleae.analyzers import HighLevelAnalyzer, AnalyzerFrame
-
+from saleae.analyzers import HighLevelAnalyzer, AnalyzerFrame, ChoicesSetting
+import sys
+import os
 
 
 # states (CURRENT_STATE)
@@ -657,17 +658,39 @@ class misoLineState (dataLineState):
 
 class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
     # class to communicate with the analyzer using the API
+    parse_FAT = ChoicesSetting(
+        label='parse FAT32',
+        choices = ['yes', 'no']
+        )
+    SDSPI_debug_level = ChoicesSetting(
+        label='SDSPI debug level',
+        choices=['Disabled', 'Error', 'Warning', 'Success', 'Info', 'Verbose']
+    )
+    FAT32_debug_level = ChoicesSetting(
+        label='FAT32 debug level',
+        choices=['Disabled', 'Error', 'Warning', 'Success', 'Info', 'Verbose']
+    )
 
     last_end_time = None
 
     result_types = {
         "error": {"format": "ERROR"},
-        "sdio": {"format": "{{data.info}}"},
+        "sdspi": {"format": "SDSPI: {{data.info}}"},
+        "fat32" : {"format": "{{data.info}}"},
     }
 
     def __init__(self):
         self.mosi_state = mosiLineState()
         self.miso_state = misoLineState()
+        print("using python version %s" % sys.version)
+
+        if self.parse_FAT == "yes":
+
+            
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'FAT-parser', 'FAT32-Parser-live', 'src'))
+            import main as fat_parser
+            self.sd_stream = fat_parser.SdStream()         
+
 
 
     def decode(self, data):
@@ -734,6 +757,10 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
         if self.last_end_time is not None:
             assert data["start_time"] > self.last_end_time, "ERROR : time overlap : start time %s, last end time %s" % (data["start_time"], self.last_end_time)
         self.last_end_time = data["end_time"]
+
+
+        if self.parse_FAT == "yes":
+            self.sd_stream.process_message(data["mosi_data"], data["miso_data"])
 
         return AnalyzerFrame(
             'SD frame',
