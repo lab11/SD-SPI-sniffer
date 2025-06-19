@@ -435,10 +435,9 @@ class dataLineState:
     this_message_type = None
     # bits in the expected response
     expected_message_length = 48
-    # value used during debugging
-    debug = print
+    # value used during debugginng
 
-    def __init__(self):
+    def __init__(self, debug_level):
         # bits leftover for the next command or response
         self.message_bits= None
         # start_time of the start of the command bits
@@ -448,6 +447,14 @@ class dataLineState:
         # time of first value
         self.first_time = None
         print("\n\n\n")
+        self.debug_level = debug_level
+
+
+
+    def debug(self, message):
+        """Print debug message if debug level is set to verbose."""
+        if self.debug_level == "Verbose":
+            print(message)
 
     # to do : find a way to avoid duplicated code for MOSI and MISO
     # for example : create 2 different classes for mosi and miso communication 
@@ -680,8 +687,8 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
     }
 
     def __init__(self):
-        self.mosi_state = mosiLineState()
-        self.miso_state = misoLineState()
+        self.mosi_state = mosiLineState(self.SDSPI_debug_level)
+        self.miso_state = misoLineState(self.SDSPI_debug_level)
         print("using python version %s" % sys.version)
 
         if self.parse_FAT == "yes":
@@ -761,9 +768,9 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
 
         if self.parse_FAT == "yes":
 
-            fat_data = self.sd_stream.process_message(data["mosi_data"], data["miso_data"])
-            if fat_data:
-                print("FAT data: ", fat_data)
+            fat_data = self.sd_stream.process_message(data["mosi_data"], data["miso_data"], current_log_level=self.FAT32_debug_level)
+            if fat_data :
+                if self.FAT32_debug_level == "Verbose" : print("FAT32 data: ", fat_data)
                 return AnalyzerFrame(
                     'fat32',
                     data["start_time"],
