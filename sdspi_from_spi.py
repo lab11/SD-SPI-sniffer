@@ -676,7 +676,7 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
     result_types = {
         "error": {"format": "ERROR"},
         "sdspi": {"format": "SDSPI: {{data.info}}"},
-        "fat32" : {"format": "{{data.info}}"},
+        "fat32" : {"format": "FAT: {{data.info}}"},
     }
 
     def __init__(self):
@@ -760,7 +760,26 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
 
 
         if self.parse_FAT == "yes":
-            self.sd_stream.process_message(data["mosi_data"], data["miso_data"])
+
+            fat_data = self.sd_stream.process_message(data["mosi_data"], data["miso_data"])
+            if fat_data:
+                print("FAT data: ", fat_data)
+                return AnalyzerFrame(
+                    'fat32',
+                    data["start_time"],
+                    data["end_time"],
+                    {
+                        "mosi_data": data["mosi_data"],
+                        "miso_data": data["miso_data"],
+                        "Ascii_data": data["Ascii_data"],
+                        "type_of_block": fat_data.get("type_of_block"),
+                        "address": fat_data.get("address"),
+                        "changes": fat_data.get("changes"),
+                        "info": fat_data.get("info"),
+                    }
+                )
+
+        
 
         return AnalyzerFrame(
             'SD frame',
