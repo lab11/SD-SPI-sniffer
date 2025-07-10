@@ -1,4 +1,4 @@
-git # SDSPI from SPI
+SDPSI parser for Logic 2
 
 This is a high-level analyzer (HLA) for decoding SD SPI comminication with a Saleae logic analyzer.
 
@@ -38,7 +38,13 @@ As of the time of writing, the latest version was v2.3.2.
 
 ### Create an "SDSPI from SPI" analyzer
 
-Use the SPI analyzer above as the input.
+1. Use the SPI analyzer above as the input.
+
+2. Select parse FAT32 if needed
+
+3. Select FAT32 debug level, Recommanded: Info
+
+4. Select SDSPI debug level, Recomanded : Error
 
 
 ## Notes
@@ -46,11 +52,8 @@ Use the SPI analyzer above as the input.
 This extension is not compatible with Saleae Logic 1.x.
 
 # To do 
-- Decode data block
 - Remove errors for multiple reads and writes
 - Check CRC
-- Better detection of data  blocks
-- Iterprete more response types
 - Improve readability
 
 
