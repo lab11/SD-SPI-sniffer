@@ -446,8 +446,8 @@ class dataLineState:
         self.message_end = None
         # time of first value
         self.first_time = None
-        print("\n\n\n")
         self.debug_level = debug_level
+        self.log("\n\n\n")
 
 
 
@@ -456,9 +456,13 @@ class dataLineState:
         if self.debug_level == "Verbose":
             print(message)
 
+    def log(self, message):
+        """Log a message to the console."""
+        if self.debug_level in ["Verbose", "Info", "Success"]:
+            print(message)
+
     # to do : find a way to avoid duplicated code for MOSI and MISO
-    # for example : create 2 different classes for mosi and miso communication 
-        
+    # for example : create 2 different classes for mosi and miso communication
 
     def add_byte(self, value, start_time, end_time):
         """
@@ -479,7 +483,7 @@ class dataLineState:
         
         # if no message is expected, ignore value
         if (not self.is_message_expected(value)) and (self.message_bits is None):
-            print("\033[33mWarning : byte received is %s but no message expected, byte is discarded\033[0m" % hex(value))
+            self.log("\033[33mWarning : byte received is %s but no message expected, byte is discarded\033[0m" % hex(value))
             return None
 
         #if there this is the first message, set the first time
@@ -515,33 +519,33 @@ class dataLineState:
             len(self.message_bits) - this_message_length
         ))
         bits = self.message_bits[:this_message_length]
-        print("\n")
+        self.log("\n")
 
         data = self.interpret_message(bits)
 
         #print the data in binary if small, in hex otherwise
         if len(bits)<= 136:
-            print("bits (bin): "+ bin(value_from_bits(bits)))
-            print("bits (hex): "+ hex(value_from_bits(bits)))
+            self.log("bits (bin): "+ bin(value_from_bits(bits)))
+            self.log("bits (hex): "+ hex(value_from_bits(bits)))
         else:
-            print("bits (hex): "+ hex(value_from_bits(bits)))
+            self.log("bits (hex): "+ hex(value_from_bits(bits)))
             pass
         
 
         hex_data = hex(value_from_bits(bits))
         ascii_data = ""
         for i in range(2, len(hex_data), 2):
-            #print("hex data: "+ hex_data[i:i+2])
+            #self.log("hex data: "+ hex_data[i:i+2])
             # print the data ascii character
             if len(hex_data[i:i+2]) == 2:
-                #print("ascii data: "+ chr(int(hex_data[i:i+2], 16)))
+                #self.log("ascii data: "+ chr(int(hex_data[i:i+2], 16)))
                 ascii_data += chr(int(hex_data[i:i+2], 16))
 
         #replace spaces with a dot
         ascii_data = ascii_data.replace(" ", ".")
-        print("Ascii data: " + ascii_data)
+        self.log("Ascii data: " + ascii_data)
 
-        print(
+        self.log(
             "start=%s, duration=%s"
             % (self.message_start, self.message_end - self.message_start)
         )
@@ -562,7 +566,7 @@ class mosiLineState (dataLineState):
 
     def interpret_message(self, bits):
 
-        print("\033[1mMOSI message\033[0m")
+        self.log("\033[1mMOSI message\033[0m")
         # determine if response or command
         transmission_bit = bits[1]
         first_byte = bits[0:8]
@@ -570,7 +574,7 @@ class mosiLineState (dataLineState):
             data  = interpret_data_block(bits)
             dataLineState.expected_message_type = None
             dataLineState.expected_message_length = 48
-            print("\031[1mERROR, This is a multiple block write which is not yet implemented in this software\033[0m")
+            self.log("\031[1mERROR, This is a multiple block write which is not yet implemented in this software\033[0m")
 
         elif dataLineState.this_message_type == 12 and first_byte == [1, 1, 1, 1, 1, 1, 1 ,0]:
             data  = interpret_data_block(bits)
@@ -592,7 +596,7 @@ class mosiLineState (dataLineState):
         else:
             dataLineState.expected_message_type = None
             dataLineState.expected_message_length = 48
-            print("Unknown response type")
+            self.log("Unknown response type")
             data = "R%s" % dataLineState.this_message_type
 
         return data
@@ -618,7 +622,7 @@ class misoLineState (dataLineState):
         #if no expected response, ignore value
         
 
-        print("\033[1mMISO message\033[0m")
+        self.log("\033[1mMISO message\033[0m")
         transmission_bit = bits[1]
         first_byte = bits[0:8]
 
@@ -652,7 +656,7 @@ class misoLineState (dataLineState):
                 bits = []
                 data = ""
             else:
-                print("Unknown response type")
+                self.log("Unknown response type")
                 data = "R%s" % dataLineState.this_message_type
 
         return data
@@ -689,12 +693,11 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
     def __init__(self):
         self.mosi_state = mosiLineState(self.SDSPI_debug_level)
         self.miso_state = misoLineState(self.SDSPI_debug_level)
-        print("using python version %s" % sys.version)
 
         if self.parse_FAT == "yes":
 
             
-            sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'FAT-parser', 'FAT32-Parser-live', 'src'))
+            sys.path.append(os.path.join(os.path.dirname(__file__), 'FAT32-Parser-live', 'src'))
             import main as fat_parser
             self.sd_stream = fat_parser.SdStream()         
 
