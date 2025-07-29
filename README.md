@@ -18,6 +18,8 @@ As of the time of writing, the latest version was v2.3.2.
 
 3. Select the "extension.json" file on your computer.
 
+4. go to the subfolder FAT32-Parser-live and type "git clone git@github.com:lab11/FAT32-Parser-live.git"
+
 ### Create an SPI analyzer
 
 1. MOSI mapped to SDIO_CMD
