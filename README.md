@@ -1,4 +1,4 @@
-git # SDSPI from SPI
+SDPSI parser for Logic 2
 
 This is a high-level analyzer (HLA) for decoding SD SPI comminication with a Saleae logic analyzer.
 
@@ -17,6 +17,8 @@ As of the time of writing, the latest version was v2.3.2.
 2. In the "Extensions" tab, select "Create Extension" and select "Load existing extension."
 
 3. Select the "extension.json" file on your computer.
+
+4. go to the subfolder FAT32-Parser-live and type "git clone git@github.com:lab11/FAT32-Parser-live.git"
 
 ### Create an SPI analyzer
 
@@ -38,7 +40,13 @@ As of the time of writing, the latest version was v2.3.2.
 
 ### Create an "SDSPI from SPI" analyzer
 
-Use the SPI analyzer above as the input.
+1. Use the SPI analyzer above as the input.
+
+2. Select parse FAT32 if needed
+
+3. Select FAT32 debug level, Recommanded: Info
+
+4. Select SDSPI debug level, Recomanded : Error
 
 
 ## Notes
