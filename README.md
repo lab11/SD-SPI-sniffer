@@ -46,12 +46,15 @@ Use the SPI analyzer above as the input.
 This extension is not compatible with Saleae Logic 1.x.
 
 # To do 
-- Decode data block
 - Remove errors for multiple reads and writes
 - Check CRC
-- Better detection of data  blocks
-- Iterprete more response types
+- Better detection of data  block
 - Improve readability
+- resolve application specific command
+- verify comand list
+- better code readability fo response types
+- better error message for error at line 499
+- error on CMD 9
 
 
 # Acknolegements
