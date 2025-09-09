@@ -29,6 +29,8 @@ from saleae.data.timing import GraphTimeDelta
 from saleae.analyzers import HighLevelAnalyzer, AnalyzerFrame, ChoicesSetting
 import sys
 import os
+import importlib.util
+import traceback
 
 
 # states (CURRENT_STATE)
@@ -695,11 +697,26 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
         self.miso_state = misoLineState(self.SDSPI_debug_level)
 
         if self.parse_FAT == "yes":
-
-            
-            sys.path.append(os.path.join(os.path.dirname(__file__), 'FAT32-Parser-live', 'src'))
-            import main as fat_parser
-            self.sd_stream = fat_parser.SdStream()         
+            # Try to load FAT32 parser from a known file path to avoid ambiguous module names
+            base_dir = os.path.dirname(__file__)
+            fat_src_dir = os.path.join(base_dir, 'FAT32-Parser-live', 'src')
+            fat_main_path = os.path.join(fat_src_dir, 'main.py')
+            self.sd_stream = None
+            try:
+                if os.path.isfile(fat_main_path):
+                    spec = importlib.util.spec_from_file_location("fat_parser", fat_main_path)
+                    fat_parser = importlib.util.module_from_spec(spec)
+                    assert spec and spec.loader
+                    spec.loader.exec_module(fat_parser)
+                    self.sd_stream = fat_parser.SdStream()
+                else:
+                    print(f"FAT32 parser not found at: {fat_main_path}. FAT parsing disabled.")
+            except Exception as e:
+                print(f"Failed to load FAT parser: {e}")
+                traceback.print_exc()
+                self.sd_stream = None
+            if self.sd_stream is None:
+                self.parse_FAT = "no"
 
 
 
