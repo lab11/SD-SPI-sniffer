@@ -896,27 +896,27 @@ def print_docs(message, byte_range, size, essential=None, message_log_level=LogL
 def display_message_info(address, message, info : dict, block_type, compare_to : Optional[dict] = None , message_log_level=LogLevel.VERBOSE, current_log_level=LogLevel.VERBOSE):
 
         changes : dict = {}
-
-        for key, value in info.items():
-            if key in compare_to and compare_to[key] != value:
-                print_message(
-                f"Key {colorize(str(key), Color.YELLOW)} modified from {colorize(str(compare_to[key]), Color.RED)} to {colorize(str(value), Color.GREEN)}",
-                LogLevel.INFO, current_log_level
-                )
-                changes[key] = {"OLD": compare_to[key], "MODIFIED": value}
-            elif key not in compare_to:
-                print_message(
-                f"Key {colorize(str(key), Color.YELLOW)} added with value {colorize(str(value), Color.GREEN)}",
-                LogLevel.INFO, current_log_level
-                )
-                changes[key] = {"ADDED": value}
-        for key in compare_to:
-            if key not in info:
-                print_message(
-                f"Key {colorize(str(key), Color.YELLOW)} deleted (was {colorize(str(compare_to[key]), Color.RED)})",
-                LogLevel.INFO, current_log_level
-                )
-                changes[key] = {"DELETED": compare_to[key]}
+        if info is not None and not isinstance(info, dict):
+            for key, value in info.items():
+                if key in compare_to and compare_to[key] != value:
+                    print_message(
+                    f"Key {colorize(str(key), Color.YELLOW)} modified from {colorize(str(compare_to[key]), Color.RED)} to {colorize(str(value), Color.GREEN)}",
+                    LogLevel.INFO, current_log_level
+                    )
+                    changes[key] = {"OLD": compare_to[key], "MODIFIED": value}
+                elif key not in compare_to:
+                    print_message(
+                    f"Key {colorize(str(key), Color.YELLOW)} added with value {colorize(str(value), Color.GREEN)}",
+                    LogLevel.INFO, current_log_level
+                    )
+                    changes[key] = {"ADDED": value}
+            for key in compare_to:
+                if key not in info:
+                    print_message(
+                    f"Key {colorize(str(key), Color.YELLOW)} deleted (was {colorize(str(compare_to[key]), Color.RED)})",
+                    LogLevel.INFO, current_log_level
+                    )
+                    changes[key] = {"DELETED": compare_to[key]}
             
 
         return {
@@ -997,7 +997,10 @@ class SdStream:
             )
 
         elif FAT_file_system and hasattr(FAT_file_system, 'fsinfo_sector_number') and address == (partition.start_sector_lba + FAT_file_system.fsinfo_sector_number):
-            FAT_file_system.parse_FSINFO(data, current_log_level=current_log_level)
+            message_to_display = display_message_info(
+                address, data, None, "FSINFO Sector", current_log_level=current_log_level
+            )
+            # FAT_file_system.parse_FSINFO(data, current_log_level=current_log_level)
         elif FAT_file_system and hasattr(FAT_file_system, 'root_dir_cluster_number') and hasattr(FAT_file_system, 'sectors_per_cluster'):
             message_to_display = None
             # Compute first data sector according to FAT32 spec
@@ -1041,7 +1044,7 @@ class SdStream:
             if message_to_display:
                 return message_to_display
 
-        if (address >= (partition.start_sector_lba + FAT_file_system.reserved_area) and address <= (partition.start_sector_lba + FAT_file_system.reserved_area + FAT_file_system.num_of_fat * FAT_file_system.num_of_sectors_per_fat)):
+        if partition and (address >= (partition.start_sector_lba + FAT_file_system.reserved_area) and address <= (partition.start_sector_lba + FAT_file_system.reserved_area + FAT_file_system.num_of_fat * FAT_file_system.num_of_sectors_per_fat)):
             print("\n")
             old_info_fat = FAT_file_system.info_fat.copy()
             FAT_file_system.parseFat(data, LogLevel.ERROR)
