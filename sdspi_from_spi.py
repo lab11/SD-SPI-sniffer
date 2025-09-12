@@ -442,7 +442,10 @@ class dataLineState:
     this_message_type = None
     # bits in the expected response
     expected_message_length = 48
-    # value used during debugginng
+    # is the card busy after a write command
+    is_busy_after_write = False
+    # data to return after the end of the busy signal, we keep it to add the busy time after in the write command
+    pending_return_data = None
 
     def __init__(self, debug_level):
         # bits leftover for the next command or response
@@ -490,7 +493,7 @@ class dataLineState:
         
         # if no message is expected, ignore value
         if (not self.is_message_expected(value)) and (self.message_bits is None):
-            self.log("\033[33mWarning : byte received is %s but no message expected, byte is discarded\033[0m" % hex(value))
+            self.debug("\033[33mWarning : byte received is %s but no message expected, byte is discarded\033[0m" % hex(value))
             return None
 
         #if there this is the first message, set the first time
@@ -560,8 +563,17 @@ class dataLineState:
             "message_start": self.message_start,
             "message_end": self.message_end,
             "data": data,
-            "Ascii_data": ascii_data
+            "Ascii_data": ascii_data,
+            "busy_time": ""
         }
+
+        # if this is a write command, expect busy signal and delay the return until it arrives
+        if dataLineState.this_message_type == 12:
+            dataLineState.is_busy_after_write = True
+            self.log("\033[33mCard is busy after write command\033[0m")
+            dataLineState.pending_return_data = return_data
+            return_data = None
+
         self.message_bits = None
         self.debug("Expected next message type : %s" % dataLineState.expected_message_type)
         self.debug("Expected next message length : %s" % dataLineState.expected_message_length)
@@ -570,6 +582,11 @@ class dataLineState:
  
 
 class mosiLineState (dataLineState):
+
+    def deal_with_busy_signal(self, value, start_time, end_time):
+        if value != 0xFF:
+            self.log("\033[33mERROR, MOSI line should not be active during busy signal after a write data block\033[0m")
+            assert False, f"MOSI line should not be active during busy signal after a write data block (value is {hex(value)})"
 
     def interpret_message(self, bits):
 
@@ -616,6 +633,15 @@ class mosiLineState (dataLineState):
 
         
 class misoLineState (dataLineState):
+
+    def deal_with_busy_signal(self, value, start_time, end_time):
+        if value == 0xFF:
+            self.log("\033[33mCard is no longer busy\033[0m")
+            return_data = dataLineState.pending_return_data
+            dataLineState.is_busy_after_write = False
+            dataLineState.pending_return_data = None
+            return_data["busy_time"] = (float(start_time - self.message_end))
+            return return_data
         
     def interpret_message(self, bits):
         """
@@ -711,16 +737,7 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
 
         mosi_data = None
         miso_data = None
-
-        if "mosi" in data.data:
-            value_mosi = data.data["mosi"]
-            if isinstance(value_mosi, bytes):
-                assert len(value_mosi) == 1
-                value_mosi = value_mosi[0]
-            assert isinstance(value_mosi, int)
-            # if bus is idle, ignore value
-            mosi_data = self.mosi_state.add_byte(value_mosi, data.start_time, data.end_time)
-                
+        return_data_from_write_block = None
 
         if "miso" in data.data:
             value_miso = data.data["miso"]
@@ -729,10 +746,30 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 value_miso = value_miso[0]
             assert isinstance(value_miso, int)
 
+            #if it was busy after a write and it is not anymore
+            if dataLineState.is_busy_after_write:
+                #call the function to deal with busy signal, specific to miso line
+                self.miso_state.log("\033[33m checking if it is still busy... value is %s\033[0m" % hex(value_miso))
+                return_data_from_write_block = self.miso_state.deal_with_busy_signal(value_miso, data.start_time, data.end_time)
+                #if there is data to return, return it
+                self.miso_state.log("\033[33mreturn_data is %s\033[0m" % return_data_from_write_block)
+
             #only work on the data if a message is expected
             if self.miso_state.expected_message_type :
                 miso_data = self.miso_state.add_byte(value_miso, data.start_time, data.end_time)
-                
+
+        if "mosi" in data.data:
+            value_mosi = data.data["mosi"]
+            if isinstance(value_mosi, bytes):
+                assert len(value_mosi) == 1
+                value_mosi = value_mosi[0]
+            assert isinstance(value_mosi, int)
+            mosi_data = self.mosi_state.add_byte(value_mosi, data.start_time, data.end_time)
+        
+        if return_data_from_write_block:
+            assert mosi_data is None, "ERROR : both mosi and mosi data from write block are not empty"
+            mosi_data = return_data_from_write_block
+
 
         # To do : refactor this part
         
@@ -743,7 +780,8 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 "end_time": mosi_data["message_end"],
                 "mosi_data": mosi_data["data"],
                 "miso_data" : "",
-                "Ascii_data": mosi_data["Ascii_data"]
+                "Ascii_data": mosi_data["Ascii_data"],
+                "busy_time": mosi_data["busy_time"]
             }
         elif miso_data: 
             #miso_data["message_start"] = miso_data["message_end"] 
@@ -752,7 +790,8 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 "end_time": miso_data["message_end"],
                 "mosi_data": "",
                 "miso_data" : miso_data["data"],
-                "Ascii_data": miso_data["Ascii_data"]
+                "Ascii_data": miso_data["Ascii_data"],
+                "busy_time": miso_data["busy_time"]
             }
         elif mosi_data and miso_data:
             # not sure what to do here, but it shouldn't happen
@@ -762,7 +801,8 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                 "end_time": mosi_data["message_end"],
                 "mosi_data": mosi_data["data"] + "error",
                 "miso_data" : miso_data["data"] + "error",
-                "Ascii_data": mosi_data["Ascii_data"]
+                "Ascii_data": mosi_data["Ascii_data"],
+                "busy_time": mosi_data["busy_time"]
             }
         else:
             return None
@@ -786,6 +826,7 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
                         "mosi_data": data["mosi_data"],
                         "miso_data": data["miso_data"],
                         "Ascii_data": data["Ascii_data"],
+                        "busy_time": data["busy_time"],
                         "type_of_block": fat_data.get("type_of_block"),
                         "address": fat_data.get("address"),
                         "changes": fat_data.get("changes"),
@@ -800,7 +841,9 @@ class SdmmcFromSpiAnalyzer(HighLevelAnalyzer):
             data["start_time"],
             data["end_time"],
             {"mosi_data": data["mosi_data"],
-            "miso_data": data["miso_data"], "Ascii_data": data["Ascii_data"]}
+            "miso_data": data["miso_data"],
+            "Ascii_data": data["Ascii_data"],
+            "busy_time": data["busy_time"]}
             #to do : have better visualtion of the data
         )
 
